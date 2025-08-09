@@ -3,7 +3,16 @@ export function getWasteStatus(inst: any) {
   return inst.cpu < 2 && inst.uptime > 24;
 }
 
+import { useAppContext } from "../lib/AppContext";
+
 export default function InstanceTable({ instances }: { instances: any[] }) {
+  const { filter } = useAppContext();
+  const filteredInstances = filter
+    ? instances.filter(inst =>
+        inst.region.toLowerCase().includes(filter.toLowerCase()) ||
+        inst.name.toLowerCase().includes(filter.toLowerCase())
+      )
+    : instances;
   return (
     <div className="bg-white rounded shadow p-6 overflow-x-auto">
       <h2 className="font-bold text-xl text-blue-600 mb-2">EC2 Instance Utilization</h2>
@@ -22,7 +31,7 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
           </tr>
         </thead>
         <tbody>
-          {instances.map(inst => (
+          {filteredInstances.map(inst => (
             <tr key={inst.id} className={getWasteStatus(inst) ? "bg-red-50" : ""}>
               <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.name}</td>
               <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.type}</td>
