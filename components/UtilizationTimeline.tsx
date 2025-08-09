@@ -9,9 +9,9 @@ export default function UtilizationTimeline() {
     // more...
   ];
   return (
-    <div className="bg-white p-6 rounded shadow flex flex-col items-center">
+    <div className="bg-white p-6 rounded shadow flex flex-col items-center w-full">
       <h2 className="font-bold text-xl text-blue-600 mb-2">Instance Utilization Timeline</h2>
-      <div className="w-full">
+      <div className="w-full max-w-full overflow-x-auto">
         {/* Simple SVG mockup for CPU trend */}
         <svg width="100%" height="80" viewBox="0 0 200 80">
           <polyline
@@ -21,11 +21,11 @@ export default function UtilizationTimeline() {
             points={usageData.map((u, i) => `${i*40},${80 - u.cpu}`).join(' ')}
           />
         </svg>
-        <div className="flex justify-between text-xs mt-2 px-2">
+        <div className="flex justify-between text-xs mt-2 px-2 flex-wrap">
           {usageData.map(u => <span key={u.time} className="text-gray-900">{u.time}</span>)}
         </div>
       </div>
-    <div className="mt-2 text-xs text-gray-800">CPU usage over last 4 hours</div>
+      <div className="mt-2 text-xs text-gray-800">CPU usage over last 4 hours</div>
     </div>
   );
 }
