@@ -22,10 +22,10 @@ export default function UtilizationTimeline() {
           />
         </svg>
         <div className="flex justify-between text-xs mt-2 px-2">
-          {usageData.map(u => <span key={u.time}>{u.time}</span>)}
+          {usageData.map(u => <span key={u.time} className="text-gray-900">{u.time}</span>)}
         </div>
       </div>
-      <div className="mt-2 text-xs text-gray-500">CPU usage over last 4 hours</div>
+    <div className="mt-2 text-xs text-gray-800">CPU usage over last 4 hours</div>
     </div>
   );
 }

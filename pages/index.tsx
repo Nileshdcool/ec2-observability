@@ -11,8 +11,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-700">EC2 Observability Dashboard</h1>
-        <p className="text-gray-500">Gain insights on EC2 usage, costs, and waste for research teams</p>
+    <h1 className="text-3xl font-bold text-blue-700">EC2 Observability Dashboard</h1>
+    <p className="text-gray-800">Gain insights on EC2 usage, costs, and waste for research teams</p>
       </header>
       
       {/* Filters */}
