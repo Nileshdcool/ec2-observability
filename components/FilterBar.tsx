@@ -1,26 +1,57 @@
 import { useAppContext } from "../lib/AppContext";
+import { instances } from "../mock-data/ec2Instances";
 
 export default function FilterBar() {
-  const { filter, setFilter } = useAppContext();
+  // Extract unique values for dropdowns
+  const regions = Array.from(new Set(instances.map(i => i.region)));
+  const types = Array.from(new Set(instances.map(i => i.type)));
+  const owners = Array.from(new Set(instances.map(i => i.owner)));
+  const wasteLevels = ["All", "Waste", "OK"];
+
+  // Context for all filters
+  const { filter, setFilter, typeFilter, setTypeFilter, ownerFilter, setOwnerFilter, wasteFilter, setWasteFilter } = useAppContext();
+
   return (
     <div className="mb-4 flex gap-4 flex-wrap bg-white p-4 rounded shadow w-full">
-        <input
-          className="border px-2 py-1 rounded placeholder-gray-800 text-gray-900 w-full sm:w-auto"
-          type="text"
-          placeholder="Filter by region"
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-        />
-        {/* Other filters can be added to context as needed */}
-        <input
-          className="border px-2 py-1 rounded placeholder-gray-800 text-gray-900 w-full sm:w-auto"
-          type="text" placeholder="Instance type" />
-        <input
-          className="border px-2 py-1 rounded placeholder-gray-800 text-gray-900 w-full sm:w-auto"
-          type="text" placeholder="Owner" />
-        <input
-          className="border px-2 py-1 rounded placeholder-gray-800 text-gray-900 w-full sm:w-auto"
-          type="text" placeholder="Waste Level" />
+      <select
+        className="border px-2 py-1 rounded text-gray-900 w-full sm:w-auto"
+        value={filter}
+        onChange={e => setFilter(e.target.value)}
+      >
+        <option value="">All Regions</option>
+        {regions.map(region => (
+          <option key={region} value={region}>{region}</option>
+        ))}
+      </select>
+      <select
+        className="border px-2 py-1 rounded text-gray-900 w-full sm:w-auto"
+        value={typeFilter}
+        onChange={e => setTypeFilter(e.target.value)}
+      >
+        <option value="">All Types</option>
+        {types.map(type => (
+          <option key={type} value={type}>{type}</option>
+        ))}
+      </select>
+      <select
+        className="border px-2 py-1 rounded text-gray-900 w-full sm:w-auto"
+        value={ownerFilter}
+        onChange={e => setOwnerFilter(e.target.value)}
+      >
+        <option value="">All Owners</option>
+        {owners.map(owner => (
+          <option key={owner} value={owner}>{owner}</option>
+        ))}
+      </select>
+      <select
+        className="border px-2 py-1 rounded text-gray-900 w-full sm:w-auto"
+        value={wasteFilter}
+        onChange={e => setWasteFilter(e.target.value)}
+      >
+        {wasteLevels.map(level => (
+          <option key={level} value={level}>{level}</option>
+        ))}
+      </select>
     </div>
   );
 }

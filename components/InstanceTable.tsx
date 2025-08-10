@@ -6,13 +6,23 @@ export function getWasteStatus(inst: any) {
 import { useAppContext } from "../lib/AppContext";
 
 export default function InstanceTable({ instances }: { instances: any[] }) {
-  const { filter } = useAppContext();
-  const filteredInstances = filter
-    ? instances.filter(inst =>
-        inst.region.toLowerCase().includes(filter.toLowerCase()) ||
-        inst.name.toLowerCase().includes(filter.toLowerCase())
-      )
-    : instances;
+  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  let filteredInstances = instances;
+  if (filter) {
+    filteredInstances = filteredInstances.filter(inst => inst.region === filter);
+  }
+  if (typeFilter) {
+    filteredInstances = filteredInstances.filter(inst => inst.type === typeFilter);
+  }
+  if (ownerFilter) {
+    filteredInstances = filteredInstances.filter(inst => inst.owner === ownerFilter);
+  }
+  if (wasteFilter && wasteFilter !== "All") {
+    filteredInstances = filteredInstances.filter(inst => {
+      const status = getWasteStatus(inst) ? "Waste" : "OK";
+      return status === wasteFilter;
+    });
+  }
   return (
     <div className="bg-white rounded shadow p-6 overflow-x-auto">
       <h2 className="font-bold text-xl text-blue-600 mb-2">EC2 Instance Utilization</h2>
