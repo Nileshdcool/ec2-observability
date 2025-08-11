@@ -6,7 +6,7 @@ export default function FilterBar() {
   const regions = Array.from(new Set(instances.map(i => i.region)));
   const types = Array.from(new Set(instances.map(i => i.type)));
   const owners = Array.from(new Set(instances.map(i => i.owner)));
-  const wasteLevels = ["All", "Waste", "OK"];
+  const wasteLevels = ["All", "Underused", "Over-provisioned", "OK"];
 
   // Context for all filters
   const { filter, setFilter, typeFilter, setTypeFilter, ownerFilter, setOwnerFilter, wasteFilter, setWasteFilter } = useAppContext();
