@@ -13,6 +13,9 @@ import {
   Line,
   ResponsiveContainer,
 } from "recharts";
+import { useAppContext } from "../lib/AppContext";
+import { attribution as baseAttribution } from "../mock-data/costs";
+
 
 type Attribution = {
   dimension: string;
@@ -20,9 +23,21 @@ type Attribution = {
   timeSeries?: { time: string; cost: number }[];
 };
 
-export default function CostAttributionPanel({ attribution }: { attribution: Attribution[] }) {
+
+export default function CostAttributionPanel() {
+  const { filter, typeFilter, ownerFilter } = useAppContext();
   const [view, setView] = useState<'table' | 'chart'>("table");
   const [compareBy, setCompareBy] = useState<'dimension' | 'time'>("dimension");
+
+  // Filter attribution by global filters
+  let attribution = baseAttribution;
+  if (filter) {
+    attribution = attribution.filter(a => a.dimension === filter || a.dimension.toLowerCase().includes(filter.toLowerCase()));
+  }
+  if (ownerFilter) {
+    attribution = attribution.filter(a => a.dimension === ownerFilter || a.dimension.toLowerCase().includes(ownerFilter.toLowerCase()));
+  }
+  // typeFilter is not directly applicable unless you have type-based attribution
 
   // Check if any attribution has timeSeries data
   const hasTimeSeries = attribution.some(a => a.timeSeries && a.timeSeries.length > 0);
@@ -36,7 +51,7 @@ export default function CostAttributionPanel({ attribution }: { attribution: Att
 
   return (
     <div className="bg-white p-6 rounded shadow">
-  {/* Title moved to top right button bar, removed duplicate */}
+      {/* Title moved to top right button bar, removed duplicate */}
       <div className="flex justify-between items-center mb-4">
         <div className="font-bold text-xl text-blue-600">Cost Attribution</div>
         <div className="flex gap-2">
@@ -109,7 +124,7 @@ export default function CostAttributionPanel({ attribution }: { attribution: Att
                 (d.timeSeries || []).map(ts => (
                   <tr key={d.dimension + ts.time}>
                     <td className="py-1 px-2 text-gray-900 whitespace-nowrap">{d.dimension}</td>
-                    <td className="py-1 px-2 text-gray-900 whitespace-nowrap">{ts.time}</td>
+                    <td className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">{ts.time}</td>
                     <td className="py-1 px-2 text-gray-900 whitespace-nowrap">${ts.cost}</td>
                   </tr>
                 ))
