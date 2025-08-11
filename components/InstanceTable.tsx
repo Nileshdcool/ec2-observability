@@ -1,12 +1,27 @@
 
-export function getWasteStatus(inst: any) {
-  return inst.cpu < 2 && inst.uptime > 24;
+
+// Waste logic: Underused (low CPU, high uptime), Over-provisioned (high CPU, low usage)
+export function getWasteStatus(inst: EC2Instance) {
+  if (inst.cpu < 2 && inst.uptime > 24) {
+    return "Underused";
+  }
+  if (inst.cpu > 16 && inst.uptime < 24) {
+    return "Over-provisioned";
+  }
+  return "OK";
 }
 
+import { EC2Instance } from "@/mock-data/ec2Instances";
 import { useAppContext } from "../lib/AppContext";
+
+
+import React, { useState } from "react";
 
 export default function InstanceTable({ instances }: { instances: any[] }) {
   const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
   let filteredInstances = instances;
   if (filter) {
     filteredInstances = filteredInstances.filter(inst => inst.region === filter);
@@ -18,48 +33,98 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
     filteredInstances = filteredInstances.filter(inst => inst.owner === ownerFilter);
   }
   if (wasteFilter && wasteFilter !== "All") {
-    filteredInstances = filteredInstances.filter(inst => {
-      const status = getWasteStatus(inst) ? "Waste" : "OK";
-      return status === wasteFilter;
-    });
+    filteredInstances = filteredInstances.filter(inst => getWasteStatus(inst) === wasteFilter);
   }
+
+  // Sorting logic
+  filteredInstances = [...filteredInstances].sort((a, b) => {
+    let valA = a[sortBy];
+    let valB = b[sortBy];
+    if (typeof valA === "string" && typeof valB === "string") {
+      return sortDir === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    }
+    if (typeof valA === "number" && typeof valB === "number") {
+      return sortDir === "asc" ? valA - valB : valB - valA;
+    }
+    return 0;
+  });
+
+  // Table headers config
+  const headers = [
+    { key: "name", label: "Name" },
+    { key: "type", label: "Type" },
+    { key: "region", label: "Region" },
+    { key: "cpu", label: "CPU" },
+    { key: "ram", label: "RAM" },
+    { key: "gpu", label: "GPU" },
+    { key: "uptime", label: "Uptime" },
+    { key: "costPerHour", label: "Cost/Hour" },
+    { key: "waste", label: "Waste" },
+  ];
+
+  function handleSort(key: string) {
+    if (sortBy === key) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("asc");
+    }
+  }
+
   return (
     <div className="bg-white rounded shadow p-6 overflow-x-auto">
       <h2 className="font-bold text-xl text-blue-600 mb-2">EC2 Instance Utilization</h2>
       <table className="min-w-[600px] w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">Name</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">Type</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">Region</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">CPU</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">RAM</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">GPU</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">Uptime</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">Cost/Hour</th>
-            <th className="px-2 py-2 text-gray-900 whitespace-nowrap">Waste</th>
+            {headers.map(h => (
+              <th
+                key={h.key}
+                className="px-2 py-2 text-gray-900 whitespace-nowrap cursor-pointer select-none"
+                onClick={() => h.key !== "waste" && handleSort(h.key)}
+              >
+                {h.label}
+                {sortBy === h.key && (
+                  <span className="ml-1">{sortDir === "asc" ? "▲" : "▼"}</span>
+                )}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {filteredInstances.map(inst => (
-            <tr key={inst.id} className={getWasteStatus(inst) ? "bg-red-50" : ""}>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.name}</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.type}</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.region}</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.cpu}</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.ram}GB</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.gpu}</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.uptime}h</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">${inst.costPerHour}</td>
-              <td className="px-2 py-2 text-gray-900 whitespace-nowrap">
-                {getWasteStatus(inst) ? (
-                  <span className="text-red-600 font-semibold">Waste</span>
-                ) : (
-                  <span className="text-green-600">OK</span>
-                )}
-              </td>
-            </tr>
-          ))}
+          {filteredInstances.map(inst => {
+            const wasteStatus = getWasteStatus(inst);
+            let wasteClass = "";
+            let wasteLabel = "OK";
+            if (wasteStatus === "Underused") {
+              wasteClass = "bg-yellow-50";
+              wasteLabel = "Underused";
+            } else if (wasteStatus === "Over-provisioned") {
+              wasteClass = "bg-orange-50";
+              wasteLabel = "Over-provisioned";
+            }
+            return (
+              <tr key={inst.id} className={wasteStatus !== "OK" ? wasteClass : ""}>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.name}</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.type}</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.region}</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.cpu}</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.ram}GB</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.gpu}</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.uptime}h</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">${inst.costPerHour}</td>
+                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">
+                  {wasteStatus === "OK" ? (
+                    <span className="text-green-600">OK</span>
+                  ) : wasteStatus === "Underused" ? (
+                    <span className="text-yellow-700 font-semibold">Underused</span>
+                  ) : (
+                    <span className="text-orange-700 font-semibold">Over-provisioned</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
