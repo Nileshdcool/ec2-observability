@@ -1,6 +1,16 @@
 
 
 import React from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceDot,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function CostOverview({ costOverview }: { costOverview: any }) {
   // Calculate KPIs
@@ -31,35 +41,41 @@ export default function CostOverview({ costOverview }: { costOverview: any }) {
         </div>
       </div>
 
-      {/* Cost Trend Chart */}
+      {/* Cost Trend Chart (Recharts) */}
       <div className="mt-2">
         <span className="text-sm text-gray-800">Trend (last 7 days):</span>
-        <div className="w-full overflow-x-auto">
-          <svg width="100%" height="60" viewBox="0 0 210 60" className="mt-2">
-            {/* Trend line */}
-            <polyline
-              fill="none"
-              stroke="#3b82f6"
-              strokeWidth="3"
-              points={costOverview.trend.map((d: number, i: number) => `${i * 30 + 10},${60 - d / 2}`).join(' ')}
-            />
-            {/* Spike cues */}
-            {costOverview.trend.map((d: number, i: number) => (
-              d > costOverview.dailyBurn * 1.3 ? (
-                <circle key={i} cx={i * 30 + 10} cy={60 - d / 2} r="4" fill="#ef4444" />
-              ) : null
-            ))}
-            {/* Lowest cues */}
-            {costOverview.trend.map((d: number, i: number) => (
-              d < costOverview.dailyBurn * 0.7 ? (
-                <circle key={i} cx={i * 30 + 10} cy={60 - d / 2} r="4" fill="#22c55e" />
-              ) : null
-            ))}
-            {/* Axis labels */}
-            {costOverview.trend.map((d: number, i: number) => (
-              <text key={i} x={i * 30 + 10} y={58} fontSize="10" textAnchor="middle" fill="#555">Day {i + 1}</text>
-            ))}
-          </svg>
+        <div className="w-full overflow-x-auto" style={{ minWidth: 300, maxWidth: 500, height: 100 }}>
+          <div style={{ width: "100%", height: "100%", minWidth: 300, maxWidth: 500 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={costOverview.trend.map((d: number, i: number) => ({
+                  day: `Day ${i + 1}`,
+                  cost: d,
+                  isSpike: d > costOverview.dailyBurn * 1.3,
+                  isDrop: d < costOverview.dailyBurn * 0.7,
+                }))}
+                margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                <YAxis hide domain={[0, 'dataMax + 10']} />
+                <Tooltip />
+                <Line type="monotone" dataKey="cost" stroke="#3b82f6" strokeWidth={3} dot={false} name="Cost" />
+                {/* Spike cues */}
+                {costOverview.trend.map((d: number, i: number) => (
+                  d > costOverview.dailyBurn * 1.3 ? (
+                    <ReferenceDot key={`spike-${i}`} x={`Day ${i + 1}`} y={d} r={4} fill="#ef4444" stroke="none" />
+                  ) : null
+                ))}
+                {/* Lowest cues */}
+                {costOverview.trend.map((d: number, i: number) => (
+                  d < costOverview.dailyBurn * 0.7 ? (
+                    <ReferenceDot key={`drop-${i}`} x={`Day ${i + 1}`} y={d} r={4} fill="#22c55e" stroke="none" />
+                  ) : null
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 

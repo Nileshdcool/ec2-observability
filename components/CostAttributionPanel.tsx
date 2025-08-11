@@ -1,6 +1,18 @@
 
 
 import React, { useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+  ResponsiveContainer,
+} from "recharts";
 
 type Attribution = {
   dimension: string;
@@ -107,109 +119,64 @@ export default function CostAttributionPanel({ attribution }: { attribution: Att
         </div>
       )}
 
-      {/* Chart View: Dimension Comparison */}
+      {/* Chart View: Dimension Comparison (Recharts BarChart) */}
       {view === "chart" && compareBy === "dimension" && (
         <div className="overflow-x-auto mt-2">
-          <div className="relative w-full" style={{ minWidth: 400, height: 180 }}>
-            {/* SVG Bar Chart */}
-            <svg width="100%" height="180" viewBox={`0 0 ${Math.max(attribution.length * 60, 400)} 180`}>
-              {/* Y-axis */}
-              <line x1="40" y1="20" x2="40" y2="160" stroke="#888" />
-              {/* X-axis */}
-              <line x1="40" y1="160" x2={attribution.length * 60 + 20} y2="160" stroke="#888" />
-              {/* Y-axis labels */}
-              {[0, 500, 1000, 1500, 2000].map((v) => (
-                <text key={v} x="35" y={160 - v / 10} fontSize="10" textAnchor="end" fill="#555">{v}</text>
-              ))}
-              {/* Bars */}
-              {attribution.map((a, i) => {
-                const barHeight = a.cost / 10;
-                const x = 60 * i + 50;
-                return (
-                  <g key={a.dimension}>
-                    <rect
-                      x={x}
-                      y={160 - barHeight}
-                      width="32"
-                      height={barHeight}
-                      fill="#3b82f6"
-                      rx="4"
-                    />
-                    {/* Cost label above bar */}
-                    <text x={x + 16} y={160 - barHeight - 8} fontSize="11" textAnchor="middle" fill="#222">${a.cost}</text>
-                    {/* Dimension label below bar */}
-                    <text x={x + 16} y={172} fontSize="10" textAnchor="middle" fill="#555">{a.dimension}</text>
-                  </g>
-                );
-              })}
-            </svg>
+          <div className="relative w-full" style={{ minWidth: 400, height: 220 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={attribution} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="dimension" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="cost" fill="#3b82f6" name="Cost ($)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       )}
 
-      {/* Chart View: Time Comparison */}
+      {/* Chart View: Time Comparison (Recharts LineChart) */}
       {view === "chart" && compareBy === "time" && hasTimeSeries && (
         <div className="overflow-x-auto mt-2">
-          {/* Simple line chart using SVG for demo purposes */}
-          {(() => {
-            // Get all unique time labels from all timeSeries
-            const timeLabels = Array.from(new Set(
-              attribution.flatMap(a => (a.timeSeries || []).map(ts => ts.time))
-            ));
-            return (
-              <div className="relative">
-                <svg width="100%" height="120" viewBox="0 0 400 120">
-                  {attribution.map((a, idx) => {
-                    if (!a.timeSeries || a.timeSeries.length === 0) return null;
-                    // Map timeLabels to cost for each dimension
-                    const points = timeLabels.map((label, i) => {
-                      const ts = a.timeSeries?.find(t => t.time === label);
-                      const len = timeLabels.length;
-                      const x = len > 1 ? (i / (len - 1)) * 380 + 10 : 10;
-                      const y = ts ? 110 - ts.cost / 10 : 110;
-                      return `${x},${y}`;
-                    }).join(' ');
-                    return (
-                      <polyline
-                        key={a.dimension}
-                        points={points}
-                        fill="none"
-                        stroke={idx % 2 === 0 ? "#3b82f6" : "#6366f1"}
-                        strokeWidth="2"
-                      />
-                    );
-                  })}
-                  {/* Axes */}
-                  <line x1="10" y1="10" x2="10" y2="110" stroke="#888" />
-                  <line x1="10" y1="110" x2="390" y2="110" stroke="#888" />
-                  {/* X-axis time labels */}
-                  {timeLabels.map((label, i) => {
-                    const len = timeLabels.length;
-                    const x = len > 1 ? (i / (len - 1)) * 380 + 10 : 10;
-                    return (
-                      <text
-                        key={label}
-                        x={x}
-                        y={118}
-                        textAnchor="middle"
-                        fontSize="10"
-                        fill="#555"
-                      >{label}</text>
-                    );
-                  })}
-                </svg>
-                {/* Legend */}
-                <div className="flex gap-4 justify-center mt-2">
-                  {attribution.map(a => (
-                    <span key={a.dimension} className="text-xs text-gray-900">
-                      <span className="inline-block w-3 h-3 mr-1 rounded" style={{ background: "#3b82f6" }}></span>
-                      {a.dimension}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
+          <div className="relative w-full" style={{ minWidth: 400, height: 220 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart
+                data={(() => {
+                  // Merge all timeSeries by time label
+                  const timeLabels = Array.from(new Set(
+                    attribution.flatMap(a => (a.timeSeries || []).map(ts => ts.time))
+                  ));
+                  return timeLabels.map(time => {
+                    const entry: any = { time };
+                    attribution.forEach(a => {
+                      const ts = a.timeSeries?.find(t => t.time === time);
+                      entry[a.dimension] = ts ? ts.cost : null;
+                    });
+                    return entry;
+                  });
+                })()}
+                margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                {attribution.map((a, idx) => (
+                  <Line
+                    key={a.dimension}
+                    type="monotone"
+                    dataKey={a.dimension}
+                    stroke={idx % 2 === 0 ? "#3b82f6" : "#6366f1"}
+                    dot={false}
+                    name={a.dimension}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 
