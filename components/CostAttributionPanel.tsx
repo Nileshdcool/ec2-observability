@@ -57,13 +57,13 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
       : 0;
 
   return (
-    <div className="bg-white p-6 rounded shadow">
+  <div className="bg-white dark:bg-gray-900 p-6 rounded shadow">
       {/* Title moved to top right button bar, removed duplicate */}
       <div className="flex justify-between items-center mb-4">
-        <div className="font-bold text-xl text-blue-600">Cost Attribution</div>
+        <div className="font-bold text-xl text-blue-600 dark:text-blue-300">Cost Attribution</div>
         <div className="flex gap-2">
           <button
-            className={`p-2 rounded ${view === 'table' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
+            className={`p-2 rounded ${view === 'table' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
             onClick={() => setView('table')}
             title="Table View"
           >
@@ -71,7 +71,7 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2"/><line x1="3" y1="9" x2="21" y2="9" strokeWidth="2"/><line x1="3" y1="15" x2="21" y2="15" strokeWidth="2"/><line x1="9" y1="3" x2="9" y2="21" strokeWidth="2"/><line x1="15" y1="3" x2="15" y2="21" strokeWidth="2"/></svg>
           </button>
           <button
-            className={`p-2 rounded ${view === 'chart' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
+            className={`p-2 rounded ${view === 'chart' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
             onClick={() => setView('chart')}
             title="Chart View"
           >
@@ -81,11 +81,11 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
           {hasTimeSeries && (
             <>
               <button
-                className={`px-3 py-1 rounded ${compareBy === 'dimension' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
+                className={`px-3 py-1 rounded ${compareBy === 'dimension' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
                 onClick={() => setCompareBy('dimension')}
               >By Dimension</button>
               <button
-                className={`px-3 py-1 rounded ${compareBy === 'time' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}
+                className={`px-3 py-1 rounded ${compareBy === 'time' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
                 onClick={() => setCompareBy('time')}
               >By Time</button>
             </>
@@ -98,16 +98,16 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
         <div className="overflow-x-auto">
           <table className="min-w-[300px] w-full border mb-2">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">Dimension</th>
-                <th className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">Cost ($)</th>
+              <tr className="bg-gray-100 dark:bg-gray-800">
+                <th className="py-1 px-2 text-left text-gray-900 dark:text-gray-100 whitespace-nowrap">Dimension</th>
+                <th className="py-1 px-2 text-left text-gray-900 dark:text-gray-100 whitespace-nowrap">Cost ($)</th>
               </tr>
             </thead>
             <tbody>
               {filteredAttribution.map(d => (
                 <tr key={d.dimension}>
-                  <td className="py-1 px-2 text-gray-900 whitespace-nowrap">{d.dimension}</td>
-                  <td className="py-1 px-2 text-gray-900 whitespace-nowrap">${d.cost}</td>
+                  <td className="py-1 px-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{d.dimension}</td>
+                  <td className="py-1 px-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">${d.cost}</td>
                 </tr>
               ))}
             </tbody>
@@ -120,19 +120,19 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
         <div className="overflow-x-auto">
           <table className="min-w-[300px] w-full border mb-2">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">Dimension</th>
-                <th className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">Time</th>
-                <th className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">Cost ($)</th>
+              <tr className="bg-gray-100 dark:bg-gray-800">
+                <th className="py-1 px-2 text-left text-gray-900 dark:text-gray-100 whitespace-nowrap">Dimension</th>
+                <th className="py-1 px-2 text-left text-gray-900 dark:text-gray-100 whitespace-nowrap">Time</th>
+                <th className="py-1 px-2 text-left text-gray-900 dark:text-gray-100 whitespace-nowrap">Cost ($)</th>
               </tr>
             </thead>
             <tbody>
               {filteredAttribution.flatMap(d =>
                 (d.timeSeries || []).map((ts: TimeSeriesDatum) => (
                   <tr key={d.dimension + ts.time}>
-                    <td className="py-1 px-2 text-gray-900 whitespace-nowrap">{d.dimension}</td>
-                    <td className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">{ts.time}</td>
-                    <td className="py-1 px-2 text-gray-900 whitespace-nowrap">${ts.cost}</td>
+                    <td className="py-1 px-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{d.dimension}</td>
+                    <td className="py-1 px-2 text-left text-gray-900 dark:text-gray-100 whitespace-nowrap">{ts.time}</td>
+                    <td className="py-1 px-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">${ts.cost}</td>
                   </tr>
                 ))
               )}
@@ -204,11 +204,11 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
 
       {/* Empty State */}
       {filteredAttribution.length === 0 && (
-        <div className="text-gray-500 text-center py-8">No cost attribution data available.</div>
+  <div className="text-gray-500 dark:text-gray-400 text-center py-8">No cost attribution data available.</div>
       )}
 
-      <div className="mt-4 text-sm text-gray-800">
-        <strong>Total:</strong> ${totalCost}
+      <div className="mt-4 text-sm text-gray-800 dark:text-gray-200">
+        <strong className="dark:text-gray-100">Total:</strong> ${totalCost}
       </div>
     </div>
   );

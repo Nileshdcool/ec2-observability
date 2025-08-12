@@ -72,20 +72,20 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
   }
 
   return (
-    <div className="bg-white rounded shadow p-6 overflow-x-auto">
-      <h2 className="font-bold text-xl text-blue-600 mb-2">EC2 Instance Utilization</h2>
+  <div className="bg-white dark:bg-gray-900 rounded shadow p-6 overflow-x-auto">
+  <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">EC2 Instance Utilization</h2>
       <table className="min-w-[600px] w-full text-sm">
-        <thead className="bg-gray-100">
+        <thead className="bg-gray-100 dark:bg-gray-800">
           <tr>
             {headers.map(h => (
               <th
                 key={h.key}
-                className="px-2 py-2 text-gray-900 whitespace-nowrap cursor-pointer select-none"
+                className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap cursor-pointer select-none"
                 onClick={() => h.key !== "waste" && handleSort(h.key)}
               >
                 {h.label}
                 {sortBy === h.key && (
-                  <span className="ml-1">{sortDir === "asc" ? "▲" : "▼"}</span>
+                  <span className="ml-1">{sortDir === "asc" ? "\u25b2" : "\u25bc"}</span>
                 )}
               </th>
             ))}
@@ -97,29 +97,29 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
             let wasteClass = "";
             let wasteLabel = "OK";
             if (wasteStatus === "Underused") {
-              wasteClass = "bg-yellow-50";
+              wasteClass = "bg-yellow-50 dark:bg-yellow-900";
               wasteLabel = "Underused";
             } else if (wasteStatus === "Over-provisioned") {
-              wasteClass = "bg-orange-50";
+              wasteClass = "bg-orange-50 dark:bg-orange-900";
               wasteLabel = "Over-provisioned";
             }
             return (
               <tr key={inst.id} className={wasteStatus !== "OK" ? wasteClass : ""}>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.name}</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.type}</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.region}</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.cpu}</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.ram}GB</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.gpu}</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">{inst.uptime}h</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">${inst.costPerHour}</td>
-                <td className="px-2 py-2 text-gray-900 whitespace-nowrap">
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.name}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.type}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.region}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.cpu}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.ram}GB</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.gpu}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.uptime}h</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">${inst.costPerHour}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">
                   {wasteStatus === "OK" ? (
-                    <span className="text-green-600">OK</span>
+                    <span className="text-green-600 dark:text-green-400">OK</span>
                   ) : wasteStatus === "Underused" ? (
-                    <span className="text-yellow-700 font-semibold">Underused</span>
+                    <span className="text-yellow-700 dark:text-yellow-300 font-semibold">Underused</span>
                   ) : (
-                    <span className="text-orange-700 font-semibold">Over-provisioned</span>
+                    <span className="text-orange-700 dark:text-orange-300 font-semibold">Over-provisioned</span>
                   )}
                 </td>
               </tr>

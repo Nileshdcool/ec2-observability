@@ -3,6 +3,7 @@ import InstanceTable from "@/components/InstanceTable";
 import CostAttributionPanel from "@/components/CostAttributionPanel";
 import CostOverview from "@/components/CostOverview";
 import UtilizationTimeline from "@/components/UtilizationTimeline";
+import ThemeToggle from "@/components/ThemeToggle";
 // import removed: utilizationData will be fetched from API
 import FilterBar from "@/components/FilterBar";
 
@@ -29,10 +30,10 @@ export async function getServerSideProps() {
 
 export default function Home({ instances, costOverview, attribution, utilizationData }: any) {
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 transition-colors">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-700">EC2 Observability Dashboard</h1>
-        <p className="text-gray-800">Gain insights on EC2 usage, costs, and waste for research teams</p>
+        <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-300">EC2 Observability Dashboard</h1>
+        <p className="text-gray-800 dark:text-gray-200">Gain insights on EC2 usage, costs, and waste for research teams</p>
       </header>
 
       {/* Filters */}
@@ -49,6 +50,9 @@ export default function Home({ instances, costOverview, attribution, utilization
         {/* Pass usageData and annotations if available from API, fallback to [] */}
         <UtilizationTimeline usageData={utilizationData} annotations={costOverview.annotations || []} />
       </div>
+
+      {/* Floating theme toggle button */}
+      <ThemeToggle />
     </div>
   );
 }
