@@ -22,8 +22,9 @@ export default function FilterBar({ instances }: { instances: any[] }) {
   return (
     <div className="mb-6 w-full bg-gradient-to-r from-blue-50 to-white p-6 rounded-xl shadow-lg flex flex-wrap gap-6 justify-between items-center">
       <div className="flex flex-col w-full sm:w-1/5 min-w-[160px]">
-        <label className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.region}Region</label>
+        <label htmlFor="region-select" className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.region}Region</label>
         <select
+          id="region-select"
           className="border border-blue-200 px-3 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all hover:border-blue-400 bg-white shadow-sm"
           value={filter}
           onChange={e => setFilter(e.target.value)}
@@ -35,8 +36,9 @@ export default function FilterBar({ instances }: { instances: any[] }) {
         </select>
       </div>
       <div className="flex flex-col w-full sm:w-1/5 min-w-[160px]">
-        <label className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.type}Type</label>
+        <label htmlFor="type-select" className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.type}Type</label>
         <select
+          id="type-select"
           className="border border-blue-200 px-3 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all hover:border-blue-400 bg-white shadow-sm"
           value={typeFilter}
           onChange={e => setTypeFilter(e.target.value)}
@@ -48,8 +50,9 @@ export default function FilterBar({ instances }: { instances: any[] }) {
         </select>
       </div>
       <div className="flex flex-col w-full sm:w-1/5 min-w-[160px]">
-        <label className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.owner}Owner</label>
+        <label htmlFor="owner-select" className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.owner}Owner</label>
         <select
+          id="owner-select"
           className="border border-blue-200 px-3 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all hover:border-blue-400 bg-white shadow-sm"
           value={ownerFilter}
           onChange={e => setOwnerFilter(e.target.value)}
@@ -61,8 +64,9 @@ export default function FilterBar({ instances }: { instances: any[] }) {
         </select>
       </div>
       <div className="flex flex-col w-full sm:w-1/5 min-w-[160px]">
-        <label className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.waste}Waste Level</label>
+        <label htmlFor="waste-select" className="mb-1 text-sm font-semibold text-blue-700 flex items-center">{icons.waste}Waste Level</label>
         <select
+          id="waste-select"
           className="border border-blue-200 px-3 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all hover:border-blue-400 bg-white shadow-sm"
           value={wasteFilter}
           onChange={e => setWasteFilter(e.target.value)}
