@@ -18,7 +18,7 @@ import { useAppContext } from "../lib/AppContext";
 import React, { useState } from "react";
 
 export default function InstanceTable({ instances }: { instances: any[] }) {
-  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  const { filter, typeFilter, ownerFilter, wasteFilter, jobIdFilter } = useAppContext();
   const [sortBy, setSortBy] = useState<string>("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
@@ -31,6 +31,9 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
   }
   if (ownerFilter) {
     filteredInstances = filteredInstances.filter(inst => inst.owner === ownerFilter);
+  }
+  if (jobIdFilter) {
+    filteredInstances = filteredInstances.filter(inst => inst.jobId === jobIdFilter);
   }
   if (wasteFilter && wasteFilter !== "All") {
     filteredInstances = filteredInstances.filter(inst => getWasteStatus(inst) === wasteFilter);
