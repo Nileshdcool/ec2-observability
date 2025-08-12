@@ -12,7 +12,7 @@ interface AppState {
   setWasteFilter: (value: string) => void;
 }
 
-const AppContext = createContext<AppState | undefined>(undefined);
+export const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [filter, setFilter] = useState<string>('');
