@@ -32,7 +32,7 @@ describe('CostAttributionPanel', () => {
 
   it('switches to chart view', () => {
     renderWithContext(<CostAttributionPanel attribution={attribution} instances={instances} />);
-    fireEvent.click(screen.getByTitle('Chart View'));
+    fireEvent.click(screen.getByTitle('Bar Chart View'));
     expect(screen.getByText('Cost Attribution')).toBeInTheDocument();
   });
 
