@@ -16,12 +16,13 @@ import { useAppContext } from "../lib/AppContext";
 
 export default function CostOverview({ costOverview, instances }: { costOverview: any, instances: any[] }) {
   const [trendRange, setTrendRange] = React.useState<'7d' | '24h'>('7d');
-  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  const { filter, typeFilter, ownerFilter, wasteFilter, jobIdFilter } = useAppContext();
   // Apply filters to instances
   let filteredInstances = instances;
   if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
   if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
   if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
+  if (jobIdFilter) filteredInstances = filteredInstances.filter(i => i.jobId === jobIdFilter);
   if (wasteFilter && wasteFilter !== "All") filteredInstances = filteredInstances.filter(i => i.waste === wasteFilter);
 
   // Calculate cost overview based on filtered instances

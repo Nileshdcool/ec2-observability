@@ -29,7 +29,7 @@ type TimeSeriesDatum = { time: string; cost: number };
 type AttributionDatum = { dimension: string; cost: number; timeSeries?: TimeSeriesDatum[] };
 
 export default function CostAttributionPanel({ attribution, instances }: { attribution: AttributionDatum[], instances: any[] }) {
-  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  const { filter, typeFilter, ownerFilter, wasteFilter, jobIdFilter } = useAppContext();
   const [view, setView] = useState<'table' | 'chart' | 'pie'>("table");
   const [compareBy, setCompareBy] = useState<'dimension' | 'time'>("dimension");
   const [dimensionType, setDimensionType] = useState<'region' | 'type' | 'owner' | 'jobId' | 'team'>("region");
@@ -39,6 +39,7 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
   if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
   if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
   if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
+  if (jobIdFilter) filteredInstances = filteredInstances.filter(i => i.jobId === jobIdFilter);
   if (wasteFilter && wasteFilter !== "All") filteredInstances = filteredInstances.filter(i => {
     if (wasteFilter === "Underused") return i.cpu < 2 && i.uptime > 24;
     if (wasteFilter === "Over-provisioned") return i.cpu > 16 && i.uptime < 24;

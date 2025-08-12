@@ -34,13 +34,14 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
   // Server selection
   const [selectedInstance, setSelectedInstance] = useState<string>(instanceId || '');
   // Get filters from context
-  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  const { filter, typeFilter, ownerFilter, wasteFilter, jobIdFilter } = useAppContext();
 
   // Find filtered instances
   let filteredInstances = allInstances;
   if (filter) filteredInstances = filteredInstances.filter(inst => inst.region === filter);
   if (typeFilter) filteredInstances = filteredInstances.filter(inst => inst.type === typeFilter);
   if (ownerFilter) filteredInstances = filteredInstances.filter(inst => inst.owner === ownerFilter);
+  if (jobIdFilter) filteredInstances = filteredInstances.filter(inst => inst.jobId === jobIdFilter);
   if (wasteFilter && wasteFilter !== "All") {
     filteredInstances = filteredInstances.filter(inst => {
       if (wasteFilter === "Underused") return inst.cpu < 2 && inst.uptime > 24;
