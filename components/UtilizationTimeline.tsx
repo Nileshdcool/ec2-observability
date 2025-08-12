@@ -71,8 +71,8 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
   const hasData = filteredUsageData && filteredUsageData.length > 0;
 
   return (
-    <div className="bg-white p-6 rounded shadow flex flex-col items-center w-full">
-      <h2 className="font-bold text-xl text-blue-600 mb-2">Instance Utilization Timeline</h2>
+  <div className="bg-white dark:bg-gray-900 p-6 rounded shadow flex flex-col items-center w-full">
+  <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">Instance Utilization Timeline</h2>
       <div className="w-full max-w-full h-80">
         {hasData ? (
           <ResponsiveContainer width="100%" height="100%">
@@ -92,10 +92,10 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">No usage data available.</div>
+          <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">No usage data available.</div>
         )}
       </div>
-      <div className="mt-2 text-xs text-gray-800">
+      <div className="mt-2 text-xs text-gray-800 dark:text-gray-200">
         {hasData ? (
           <>Selected range: {filteredUsageData[selectedRange.startIndex]?.time} to {filteredUsageData[selectedRange.endIndex]?.time}</>
         ) : (
