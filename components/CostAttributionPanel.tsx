@@ -12,39 +12,42 @@ import {
   LineChart,
   Line,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { useAppContext } from "../lib/AppContext";
+
+// Add global type augmentation for window.costOverview
+declare global {
+  interface Window {
+    costOverview?: { total: number };
+  }
+}
 
 type TimeSeriesDatum = { time: string; cost: number };
 type AttributionDatum = { dimension: string; cost: number; timeSeries?: TimeSeriesDatum[] };
 
 export default function CostAttributionPanel({ attribution, instances }: { attribution: AttributionDatum[], instances: any[] }) {
   const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
-  const [view, setView] = useState<'table' | 'chart'>("table");
+  const [view, setView] = useState<'table' | 'chart' | 'pie'>("table");
   const [compareBy, setCompareBy] = useState<'dimension' | 'time'>("dimension");
+  const [dimensionType, setDimensionType] = useState<'region' | 'type' | 'owner' | 'jobId' | 'team'>("region");
 
-  // Filter attribution by all filters using instances
-  let filteredAttribution = attribution;
-  if (filter || typeFilter || ownerFilter || (wasteFilter && wasteFilter !== "All")) {
-    let filteredInstances = instances;
-    if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
-    if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
-    if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
-    if (wasteFilter && wasteFilter !== "All") filteredInstances = filteredInstances.filter(i => i.waste === wasteFilter);
+  // Apply global filters to instances first
+  let filteredInstances = instances;
+  if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
+  if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
+  if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
+  if (wasteFilter && wasteFilter !== "All") filteredInstances = filteredInstances.filter(i => {
+    if (wasteFilter === "Underused") return i.cpu < 2 && i.uptime > 24;
+    if (wasteFilter === "Over-provisioned") return i.cpu > 16 && i.uptime < 24;
+    return wasteFilter === "OK";
+  });
 
-    // Determine dimension type by checking which property matches most dimensions
-    // Try owner, region, type, waste
-    const dimensionProps = ["owner", "region", "type", "waste"];
-    let propMatchCounts: Record<string, number> = {};
-    dimensionProps.forEach(prop => {
-      propMatchCounts[prop] = filteredAttribution.filter(a => filteredInstances.some(i => i[prop] === a.dimension)).length;
-    });
-    // Pick the property with the most matches
-    const bestProp = dimensionProps.reduce((a, b) => propMatchCounts[a] > propMatchCounts[b] ? a : b);
-    // Get valid dimensions
-    const validDimensions = new Set(filteredInstances.map(i => i[bestProp]));
-    filteredAttribution = filteredAttribution.filter(a => validDimensions.has(a.dimension));
-  }
+  // Now filter attribution by valid dimensions from filtered instances
+  let validDimensions = new Set(filteredInstances.map(i => i[dimensionType]));
+  let filteredAttribution = attribution.filter(a => validDimensions.has(a.dimension));
 
   // Check if any attribution has timeSeries data
   const hasTimeSeries = filteredAttribution.some(a => a.timeSeries && a.timeSeries.length > 0);
@@ -55,6 +58,8 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
     : hasTimeSeries
       ? filteredAttribution.reduce((sum, a) => sum + (a.timeSeries ? a.timeSeries.reduce((s: number, t: TimeSeriesDatum) => s + t.cost, 0) : 0), 0)
       : 0;
+  // Unaccounted cost (difference from costOverview.total)
+  const unaccountedCost = typeof window !== "undefined" && window.costOverview ? window.costOverview.total - totalCost : 0;
 
   return (
   <div className="bg-white dark:bg-gray-900 p-6 rounded shadow">
@@ -73,25 +78,61 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
           <button
             className={`p-2 rounded ${view === 'chart' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
             onClick={() => setView('chart')}
-            title="Chart View"
+            title="Bar Chart View"
           >
             {/* Chart Icon */}
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="13" width="4" height="8" rx="1" strokeWidth="2"/><rect x="9" y="9" width="4" height="12" rx="1" strokeWidth="2"/><rect x="15" y="5" width="4" height="16" rx="1" strokeWidth="2"/></svg>
           </button>
-          {hasTimeSeries && (
-            <>
-              <button
-                className={`px-3 py-1 rounded ${compareBy === 'dimension' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
-                onClick={() => setCompareBy('dimension')}
-              >By Dimension</button>
-              <button
-                className={`px-3 py-1 rounded ${compareBy === 'time' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
-                onClick={() => setCompareBy('time')}
-              >By Time</button>
-            </>
-          )}
+          <button
+            className={`p-2 rounded ${view === 'pie' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
+            onClick={() => setView('pie')}
+            title="Pie Chart View"
+          >
+            {/* Pie Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="2"/><path d="M12 2v10l8 4" strokeWidth="2"/></svg>
+          </button>
+          <select value={dimensionType} onChange={e => setDimensionType(e.target.value as any)} className="ml-2 p-1 rounded border dark:bg-gray-800 dark:text-gray-100 bg-white text-gray-900 custom-select">
+            <option value="region">Region</option>
+            <option value="type">Type</option>
+            <option value="owner">Owner/Team</option>
+            <option value="jobId">Job ID</option>
+          </select>
+          <button
+            className={`px-3 py-1 rounded ${compareBy === 'dimension' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
+            onClick={() => setCompareBy('dimension')}
+          >By Dimension</button>
+          <button
+            className={`px-3 py-1 rounded ${compareBy === 'time' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
+            onClick={() => setCompareBy('time')}
+          >By Time</button>
         </div>
       </div>
+      {/* Pie Chart View: Dimension Comparison */}
+      {view === "pie" && compareBy === "dimension" && (
+        <div className="overflow-x-auto mt-2">
+          <div className="relative w-full" style={{ minWidth: 400, height: 220 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={filteredAttribution}
+                  dataKey="cost"
+                  nameKey="dimension"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label
+                >
+                  {filteredAttribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#3b82f6" : "#6366f1"} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Table View */}
       {view === "table" && compareBy === "dimension" && (
@@ -209,6 +250,9 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
 
       <div className="mt-4 text-sm text-gray-800 dark:text-gray-200">
         <strong className="dark:text-gray-100">Total:</strong> ${totalCost}
+        {unaccountedCost > 0 && (
+          <span className="ml-4 text-red-600 dark:text-red-400">Unaccounted: ${unaccountedCost}</span>
+        )}
       </div>
     </div>
   );
