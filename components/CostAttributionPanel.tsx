@@ -14,39 +14,46 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useAppContext } from "../lib/AppContext";
-import { attribution as baseAttribution } from "../mock-data/costs";
 
+type TimeSeriesDatum = { time: string; cost: number };
+type AttributionDatum = { dimension: string; cost: number; timeSeries?: TimeSeriesDatum[] };
 
-type Attribution = {
-  dimension: string;
-  cost: number;
-  timeSeries?: { time: string; cost: number }[];
-};
-
-
-export default function CostAttributionPanel() {
-  const { filter, typeFilter, ownerFilter } = useAppContext();
+export default function CostAttributionPanel({ attribution, instances }: { attribution: AttributionDatum[], instances: any[] }) {
+  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
   const [view, setView] = useState<'table' | 'chart'>("table");
   const [compareBy, setCompareBy] = useState<'dimension' | 'time'>("dimension");
 
-  // Filter attribution by global filters
-  let attribution = baseAttribution;
-  if (filter) {
-    attribution = attribution.filter(a => a.dimension === filter || a.dimension.toLowerCase().includes(filter.toLowerCase()));
+  // Filter attribution by all filters using instances
+  let filteredAttribution = attribution;
+  if (filter || typeFilter || ownerFilter || (wasteFilter && wasteFilter !== "All")) {
+    let filteredInstances = instances;
+    if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
+    if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
+    if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
+    if (wasteFilter && wasteFilter !== "All") filteredInstances = filteredInstances.filter(i => i.waste === wasteFilter);
+
+    // Determine dimension type by checking which property matches most dimensions
+    // Try owner, region, type, waste
+    const dimensionProps = ["owner", "region", "type", "waste"];
+    let propMatchCounts: Record<string, number> = {};
+    dimensionProps.forEach(prop => {
+      propMatchCounts[prop] = filteredAttribution.filter(a => filteredInstances.some(i => i[prop] === a.dimension)).length;
+    });
+    // Pick the property with the most matches
+    const bestProp = dimensionProps.reduce((a, b) => propMatchCounts[a] > propMatchCounts[b] ? a : b);
+    // Get valid dimensions
+    const validDimensions = new Set(filteredInstances.map(i => i[bestProp]));
+    filteredAttribution = filteredAttribution.filter(a => validDimensions.has(a.dimension));
   }
-  if (ownerFilter) {
-    attribution = attribution.filter(a => a.dimension === ownerFilter || a.dimension.toLowerCase().includes(ownerFilter.toLowerCase()));
-  }
-  // typeFilter is not directly applicable unless you have type-based attribution
 
   // Check if any attribution has timeSeries data
-  const hasTimeSeries = attribution.some(a => a.timeSeries && a.timeSeries.length > 0);
+  const hasTimeSeries = filteredAttribution.some(a => a.timeSeries && a.timeSeries.length > 0);
 
   // Helper for total cost
   const totalCost = compareBy === "dimension"
-    ? attribution.reduce((sum, a) => sum + a.cost, 0)
+    ? filteredAttribution.reduce((sum, a) => sum + a.cost, 0)
     : hasTimeSeries
-      ? attribution.reduce((sum, a) => sum + (a.timeSeries ? a.timeSeries.reduce((s, t) => s + t.cost, 0) : 0), 0)
+      ? filteredAttribution.reduce((sum, a) => sum + (a.timeSeries ? a.timeSeries.reduce((s: number, t: TimeSeriesDatum) => s + t.cost, 0) : 0), 0)
       : 0;
 
   return (
@@ -97,7 +104,7 @@ export default function CostAttributionPanel() {
               </tr>
             </thead>
             <tbody>
-              {attribution.map(d => (
+              {filteredAttribution.map(d => (
                 <tr key={d.dimension}>
                   <td className="py-1 px-2 text-gray-900 whitespace-nowrap">{d.dimension}</td>
                   <td className="py-1 px-2 text-gray-900 whitespace-nowrap">${d.cost}</td>
@@ -120,8 +127,8 @@ export default function CostAttributionPanel() {
               </tr>
             </thead>
             <tbody>
-              {attribution.flatMap(d =>
-                (d.timeSeries || []).map(ts => (
+              {filteredAttribution.flatMap(d =>
+                (d.timeSeries || []).map((ts: TimeSeriesDatum) => (
                   <tr key={d.dimension + ts.time}>
                     <td className="py-1 px-2 text-gray-900 whitespace-nowrap">{d.dimension}</td>
                     <td className="py-1 px-2 text-left text-gray-900 whitespace-nowrap">{ts.time}</td>
@@ -139,7 +146,7 @@ export default function CostAttributionPanel() {
         <div className="overflow-x-auto mt-2">
           <div className="relative w-full" style={{ minWidth: 400, height: 220 }}>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={attribution} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+              <BarChart data={filteredAttribution} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="dimension" />
                 <YAxis />
@@ -161,12 +168,12 @@ export default function CostAttributionPanel() {
                 data={(() => {
                   // Merge all timeSeries by time label
                   const timeLabels = Array.from(new Set(
-                    attribution.flatMap(a => (a.timeSeries || []).map(ts => ts.time))
+                    filteredAttribution.flatMap(a => (a.timeSeries || []).map((ts: TimeSeriesDatum) => ts.time))
                   ));
                   return timeLabels.map(time => {
                     const entry: any = { time };
-                    attribution.forEach(a => {
-                      const ts = a.timeSeries?.find(t => t.time === time);
+                    filteredAttribution.forEach(a => {
+                      const ts = a.timeSeries?.find((t: TimeSeriesDatum) => t.time === time);
                       entry[a.dimension] = ts ? ts.cost : null;
                     });
                     return entry;
@@ -179,7 +186,7 @@ export default function CostAttributionPanel() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                {attribution.map((a, idx) => (
+                {filteredAttribution.map((a, idx) => (
                   <Line
                     key={a.dimension}
                     type="monotone"
@@ -196,7 +203,7 @@ export default function CostAttributionPanel() {
       )}
 
       {/* Empty State */}
-      {attribution.length === 0 && (
+      {filteredAttribution.length === 0 && (
         <div className="text-gray-500 text-center py-8">No cost attribution data available.</div>
       )}
 

@@ -11,28 +11,26 @@ import {
   ReferenceDot,
   ResponsiveContainer,
 } from "recharts";
-import { useAppContext } from "../lib/AppContext";
-import { instances } from "../mock-data/ec2Instances";
-import { costOverview as baseCostOverview, costOverview } from "../mock-data/costs";
 
-export default function CostOverview() {
-  const { filter, typeFilter, ownerFilter } = useAppContext();
-  // Filter instances based on global filters
+import { useAppContext } from "../lib/AppContext";
+
+export default function CostOverview({ costOverview, instances }: { costOverview: any, instances: any[] }) {
+  const { filter, typeFilter, ownerFilter, wasteFilter } = useAppContext();
+  // Apply filters to instances
   let filteredInstances = instances;
   if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
   if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
   if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
+  if (wasteFilter && wasteFilter !== "All") filteredInstances = filteredInstances.filter(i => i.waste === wasteFilter);
 
   // Calculate cost overview based on filtered instances
-  // For demo, just sum costPerHour * uptime for total, and mock other fields
   const total = filteredInstances.reduce((sum, i) => sum + i.costPerHour * i.uptime, 0);
   const dailyBurn = filteredInstances.reduce((sum, i) => sum + i.costPerHour * 24, 0);
   const projectedMonthly = dailyBurn * 30;
-  const lastMonth = baseCostOverview.lastMonth;
-  const trend = baseCostOverview.trend;
-  const peakDay = baseCostOverview.peakDay;
-  const lowestDay = baseCostOverview.lowestDay;
-
+  const lastMonth = costOverview.lastMonth;
+  const trend = costOverview.trend;
+  const peakDay = costOverview.peakDay;
+  const lowestDay = costOverview.lowestDay;
   const costChange = total - lastMonth;
   const costChangePct = lastMonth ? ((costChange / lastMonth) * 100).toFixed(1) : "0";
   const isSpike = peakDay.cost > dailyBurn * 1.3;
@@ -44,15 +42,15 @@ export default function CostOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-lg">
         <div className="flex flex-col">
           <span className="text-gray-900">Total Cost</span>
-          <span className="font-semibold text-gray-900 text-2xl">${total.toFixed(2)}</span>
+          <span className="font-semibold text-gray-900 text-2xl">${total?.toFixed(2)}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-gray-900">Daily Burn</span>
-          <span className="font-semibold text-gray-900 text-2xl">${dailyBurn.toFixed(2)}</span>
+          <span className="font-semibold text-gray-900 text-2xl">${dailyBurn?.toFixed(2)}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-gray-900">Projected Monthly</span>
-          <span className="font-semibold text-gray-900 text-2xl">${projectedMonthly.toFixed(2)}</span>
+          <span className="font-semibold text-gray-900 text-2xl">${projectedMonthly?.toFixed(2)}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-gray-900">Change vs Last Month</span>
@@ -67,11 +65,11 @@ export default function CostOverview() {
           <div style={{ width: "100%", height: "100%", minWidth: 300, maxWidth: 500 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={costOverview.trend.map((d: number, i: number) => ({
+                data={trend?.map((d: number, i: number) => ({
                   day: `Day ${i + 1}`,
                   cost: d,
-                  isSpike: d > costOverview.dailyBurn * 1.3,
-                  isDrop: d < costOverview.dailyBurn * 0.7,
+                  isSpike: d > dailyBurn * 1.3,
+                  isDrop: d < dailyBurn * 0.7,
                 }))}
                 margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
               >
@@ -81,14 +79,14 @@ export default function CostOverview() {
                 <Tooltip />
                 <Line type="monotone" dataKey="cost" stroke="#3b82f6" strokeWidth={3} dot={false} name="Cost" />
                 {/* Spike cues */}
-                {costOverview.trend.map((d: number, i: number) => (
-                  d > costOverview.dailyBurn * 1.3 ? (
+                {trend?.map((d: number, i: number) => (
+                  d > dailyBurn * 1.3 ? (
                     <ReferenceDot key={`spike-${i}`} x={`Day ${i + 1}`} y={d} r={4} fill="#ef4444" stroke="none" />
                   ) : null
                 ))}
                 {/* Lowest cues */}
-                {costOverview.trend.map((d: number, i: number) => (
-                  d < costOverview.dailyBurn * 0.7 ? (
+                {trend?.map((d: number, i: number) => (
+                  d < dailyBurn * 0.7 ? (
                     <ReferenceDot key={`drop-${i}`} x={`Day ${i + 1}`} y={d} r={4} fill="#22c55e" stroke="none" />
                   ) : null
                 ))}
@@ -102,14 +100,14 @@ export default function CostOverview() {
       <div className="flex flex-col sm:flex-row gap-4 mt-2 text-sm">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900">Peak Day:</span>
-          <span className="text-gray-800">{peakDay.date}</span>
-          <span className="text-red-600 font-bold">${peakDay.cost}</span>
+          <span className="text-gray-800">{peakDay?.date}</span>
+          <span className="text-red-600 font-bold">${peakDay?.cost}</span>
           {isSpike && <span className="ml-2 px-2 py-1 bg-red-100 text-red-700 rounded text-xs">Spike</span>}
         </div>
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900">Lowest Day:</span>
-          <span className="text-gray-800">{lowestDay.date}</span>
-          <span className="text-green-600 font-bold">${lowestDay.cost}</span>
+          <span className="text-gray-800">{lowestDay?.date}</span>
+          <span className="text-green-600 font-bold">${lowestDay?.cost}</span>
           {isDrop && <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Drop</span>}
         </div>
       </div>
