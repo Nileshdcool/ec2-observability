@@ -21,12 +21,17 @@ export default function FilterBar({ instances }: { instances: any[] }) {
   };
 
   return (
-    <div className="mb-6 w-full bg-gradient-to-r from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 p-6 rounded-xl shadow-lg">
+    <div
+      className="mb-6 w-full bg-gradient-to-r from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 rounded-xl shadow-lg"
+      role="region"
+      aria-label="Filter controls"
+    >
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
         <div className="flex flex-col">
-          <label htmlFor="region-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.region}Region</label>
+          <label htmlFor="region-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.region}<span>Region</span></label>
           <select
             id="region-select"
+            aria-label="Region filter"
             className="border border-blue-200 dark:border-gray-700 px-3 py-2 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition-all hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-900 shadow-sm"
             value={filter}
             onChange={e => setFilter(e.target.value)}
@@ -38,9 +43,10 @@ export default function FilterBar({ instances }: { instances: any[] }) {
           </select>
         </div>
         <div className="flex flex-col">
-          <label htmlFor="type-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.type}Type</label>
+          <label htmlFor="type-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.type}<span>Type</span></label>
           <select
             id="type-select"
+            aria-label="Type filter"
             className="border border-blue-200 dark:border-gray-700 px-3 py-2 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition-all hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-900 shadow-sm"
             value={typeFilter}
             onChange={e => setTypeFilter(e.target.value)}
@@ -52,9 +58,10 @@ export default function FilterBar({ instances }: { instances: any[] }) {
           </select>
         </div>
         <div className="flex flex-col">
-          <label htmlFor="owner-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.owner}Owner</label>
+          <label htmlFor="owner-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.owner}<span>Owner</span></label>
           <select
             id="owner-select"
+            aria-label="Owner filter"
             className="border border-blue-200 dark:border-gray-700 px-3 py-2 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition-all hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-900 shadow-sm"
             value={ownerFilter}
             onChange={e => setOwnerFilter(e.target.value)}
@@ -66,9 +73,10 @@ export default function FilterBar({ instances }: { instances: any[] }) {
           </select>
         </div>
         <div className="flex flex-col">
-          <label htmlFor="waste-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.waste}Waste Level</label>
+          <label htmlFor="waste-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.waste}<span>Waste Level</span></label>
           <select
             id="waste-select"
+            aria-label="Waste level filter"
             className="border border-blue-200 dark:border-gray-700 px-3 py-2 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition-all hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-900 shadow-sm"
             value={wasteFilter}
             onChange={e => setWasteFilter(e.target.value)}
@@ -79,9 +87,10 @@ export default function FilterBar({ instances }: { instances: any[] }) {
           </select>
         </div>
         <div className="flex flex-col">
-          <label htmlFor="jobid-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">🧬 Job ID</label>
+          <label htmlFor="jobid-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">🧬<span>Job ID</span></label>
           <select
             id="jobid-select"
+            aria-label="Job ID filter"
             className="border border-blue-200 dark:border-gray-700 px-3 py-2 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition-all hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-900 shadow-sm"
             value={jobIdFilter}
             onChange={e => setJobIdFilter(e.target.value)}
@@ -94,8 +103,9 @@ export default function FilterBar({ instances }: { instances: any[] }) {
         </div>
         <div className="flex flex-col items-end">
           <button
-            className="px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition"
+            className="px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700"
             onClick={resetFilters}
+            aria-label="Reset all filters"
           >Reset Filters</button>
         </div>
       </div>
