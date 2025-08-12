@@ -51,15 +51,16 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
 
   // Table headers config
   const headers = [
-    { key: "name", label: "Name" },
-    { key: "type", label: "Type" },
-    { key: "region", label: "Region" },
-    { key: "cpu", label: "CPU" },
-    { key: "ram", label: "RAM" },
-    { key: "gpu", label: "GPU" },
-    { key: "uptime", label: "Uptime" },
-    { key: "costPerHour", label: "Cost/Hour" },
-    { key: "waste", label: "Waste" },
+  { key: "name", label: "Name" },
+  { key: "type", label: "Type" },
+  { key: "region", label: "Region" },
+  { key: "cpu", label: "CPU" },
+  { key: "ram", label: "RAM" },
+  { key: "gpu", label: "GPU" },
+  { key: "uptime", label: "Uptime" },
+  { key: "costPerHour", label: "Cost/Hour (USD)" },
+  { key: "jobId", label: "Job ID" },
+  { key: "waste", label: "Waste" },
   ];
 
   function handleSort(key: string) {
@@ -113,6 +114,7 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.gpu}</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.uptime}h</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">${inst.costPerHour}</td>
+                <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.jobId}</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">
                   {wasteStatus === "OK" ? (
                     <span className="text-green-600 dark:text-green-400">OK</span>
