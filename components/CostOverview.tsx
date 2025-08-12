@@ -11,13 +11,32 @@ import {
   ReferenceDot,
   ResponsiveContainer,
 } from "recharts";
+import { useAppContext } from "../lib/AppContext";
+import { instances } from "../mock-data/ec2Instances";
+import { costOverview as baseCostOverview, costOverview } from "../mock-data/costs";
 
-export default function CostOverview({ costOverview }: { costOverview: any }) {
-  // Calculate KPIs
-  const costChange = costOverview.total - costOverview.lastMonth;
-  const costChangePct = ((costChange / costOverview.lastMonth) * 100).toFixed(1);
-  const isSpike = costOverview.peakDay.cost > costOverview.dailyBurn * 1.3;
-  const isDrop = costOverview.lowestDay.cost < costOverview.dailyBurn * 0.7;
+export default function CostOverview() {
+  const { filter, typeFilter, ownerFilter } = useAppContext();
+  // Filter instances based on global filters
+  let filteredInstances = instances;
+  if (filter) filteredInstances = filteredInstances.filter(i => i.region === filter);
+  if (typeFilter) filteredInstances = filteredInstances.filter(i => i.type === typeFilter);
+  if (ownerFilter) filteredInstances = filteredInstances.filter(i => i.owner === ownerFilter);
+
+  // Calculate cost overview based on filtered instances
+  // For demo, just sum costPerHour * uptime for total, and mock other fields
+  const total = filteredInstances.reduce((sum, i) => sum + i.costPerHour * i.uptime, 0);
+  const dailyBurn = filteredInstances.reduce((sum, i) => sum + i.costPerHour * 24, 0);
+  const projectedMonthly = dailyBurn * 30;
+  const lastMonth = baseCostOverview.lastMonth;
+  const trend = baseCostOverview.trend;
+  const peakDay = baseCostOverview.peakDay;
+  const lowestDay = baseCostOverview.lowestDay;
+
+  const costChange = total - lastMonth;
+  const costChangePct = lastMonth ? ((costChange / lastMonth) * 100).toFixed(1) : "0";
+  const isSpike = peakDay.cost > dailyBurn * 1.3;
+  const isDrop = lowestDay.cost < dailyBurn * 0.7;
 
   return (
     <div className="bg-white p-6 rounded shadow flex flex-col gap-4 w-full max-w-2xl mx-auto">
@@ -25,15 +44,15 @@ export default function CostOverview({ costOverview }: { costOverview: any }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-lg">
         <div className="flex flex-col">
           <span className="text-gray-900">Total Cost</span>
-          <span className="font-semibold text-gray-900 text-2xl">${costOverview.total}</span>
+          <span className="font-semibold text-gray-900 text-2xl">${total.toFixed(2)}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-gray-900">Daily Burn</span>
-          <span className="font-semibold text-gray-900 text-2xl">${costOverview.dailyBurn}</span>
+          <span className="font-semibold text-gray-900 text-2xl">${dailyBurn.toFixed(2)}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-gray-900">Projected Monthly</span>
-          <span className="font-semibold text-gray-900 text-2xl">${costOverview.projectedMonthly}</span>
+          <span className="font-semibold text-gray-900 text-2xl">${projectedMonthly.toFixed(2)}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-gray-900">Change vs Last Month</span>
@@ -83,14 +102,14 @@ export default function CostOverview({ costOverview }: { costOverview: any }) {
       <div className="flex flex-col sm:flex-row gap-4 mt-2 text-sm">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900">Peak Day:</span>
-          <span className="text-gray-800">{costOverview.peakDay.date}</span>
-          <span className="text-red-600 font-bold">${costOverview.peakDay.cost}</span>
+          <span className="text-gray-800">{peakDay.date}</span>
+          <span className="text-red-600 font-bold">${peakDay.cost}</span>
           {isSpike && <span className="ml-2 px-2 py-1 bg-red-100 text-red-700 rounded text-xs">Spike</span>}
         </div>
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900">Lowest Day:</span>
-          <span className="text-gray-800">{costOverview.lowestDay.date}</span>
-          <span className="text-green-600 font-bold">${costOverview.lowestDay.cost}</span>
+          <span className="text-gray-800">{lowestDay.date}</span>
+          <span className="text-green-600 font-bold">${lowestDay.cost}</span>
           {isDrop && <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Drop</span>}
         </div>
       </div>
