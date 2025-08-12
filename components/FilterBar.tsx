@@ -1,7 +1,6 @@
 import { useAppContext } from "../lib/AppContext";
-import { instances } from "../mock-data/ec2Instances";
 
-export default function FilterBar() {
+export default function FilterBar({ instances }: { instances: any[] }) {
   // Extract unique values for dropdowns
   const regions = Array.from(new Set(instances.map(i => i.region)));
   const types = Array.from(new Set(instances.map(i => i.type)));
@@ -17,6 +16,7 @@ export default function FilterBar() {
     type: <span className="mr-2">🖥️</span>,
     owner: <span className="mr-2">👤</span>,
     waste: <span className="mr-2">⚡</span>
+
   };
 
   return (
