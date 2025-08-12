@@ -130,7 +130,11 @@ docker-compose up --build
 
 ## Screenshots
 
-> Add screenshots of the dashboard with simulated data here.
+### Dashboard Overview
+![Dashboard Overview](./public/image-1.png)
+
+### Cost Attribution Panel
+![Cost Attribution Panel](./public/image-2.png)
 
 ---
 
