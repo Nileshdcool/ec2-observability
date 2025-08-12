@@ -91,10 +91,10 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
             {/* Pie Icon */}
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="2"/><path d="M12 2v10l8 4" strokeWidth="2"/></svg>
           </button>
-          <select value={dimensionType} onChange={e => setDimensionType(e.target.value as any)} className="ml-2 p-1 rounded border">
+          <select value={dimensionType} onChange={e => setDimensionType(e.target.value as any)} className="ml-2 p-1 rounded border dark:bg-gray-800 dark:text-gray-100 bg-white text-gray-900 custom-select">
             <option value="region">Region</option>
             <option value="type">Type</option>
-            <option value="owner">Team</option>
+            <option value="owner">Owner/Team</option>
             <option value="jobId">Job ID</option>
           </select>
           <button
