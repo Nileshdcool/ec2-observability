@@ -115,6 +115,15 @@ export default function CostOverview({ costOverview, instances }: { costOverview
             </ResponsiveContainer>
           </div>
         </div>
+        {/* Legend for anomaly cues */}
+        <div className="flex items-center gap-4 mt-2 text-xs">
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-red-500"></span> Spike (above 1.3x daily burn)</span>
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-green-500"></span> Drop (below 0.7x daily burn)</span>
+        </div>
+        {/* Summary message for anomalies */}
+        {((trendRange === '7d' ? trend : trend24h)?.some((d: number) => d > dailyBurn * 1.3) || (trendRange === '7d' ? trend : trend24h)?.some((d: number) => d < dailyBurn * 0.7)) && (
+          <div className="mt-1 text-xs text-red-600 dark:text-red-400 font-semibold">Anomaly detected: {((trendRange === '7d' ? trend : trend24h)?.filter((d: number) => d > dailyBurn * 1.3).length || 0)} spike(s), {((trendRange === '7d' ? trend : trend24h)?.filter((d: number) => d < dailyBurn * 0.7).length || 0)} drop(s) in selected range.</div>
+        )}
       </div>
 
       {/* Peak/Low Info */}

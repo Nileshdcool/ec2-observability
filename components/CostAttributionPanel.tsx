@@ -249,11 +249,16 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
   <div className="text-gray-500 dark:text-gray-400 text-center py-8">No cost attribution data available.</div>
       )}
 
-      <div className="mt-4 text-sm text-gray-800 dark:text-gray-200">
-        <strong className="dark:text-gray-100">Total:</strong> ${totalCost}
-        {unaccountedCost > 0 && (
-          <span className="ml-4 text-red-600 dark:text-red-400">Unaccounted: ${unaccountedCost}</span>
-        )}
+      <div className="mt-4 text-sm text-gray-800 dark:text-gray-200 flex flex-col gap-1">
+        <div>
+          <strong className="dark:text-gray-100">Attributed Cost:</strong> ${totalCost}
+        </div>
+        <div>
+          <strong className="dark:text-gray-100">Total Cost (from overview):</strong> ${typeof window !== "undefined" && window.costOverview ? window.costOverview.total : "-"}
+        </div>
+        <div>
+          <strong className="dark:text-gray-100">Unaccounted Cost:</strong> <span className={unaccountedCost > 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>${unaccountedCost}</span>
+        </div>
       </div>
     </div>
   );

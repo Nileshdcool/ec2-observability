@@ -20,12 +20,49 @@ export default function FilterBar({ instances }: { instances: any[] }) {
 
   };
 
+  // Helper to clear individual filters
+  const clearFilter = (key: string) => {
+    switch (key) {
+      case 'region': setFilter(''); break;
+      case 'type': setTypeFilter(''); break;
+      case 'owner': setOwnerFilter(''); break;
+      case 'waste': setWasteFilter('All'); break;
+      case 'jobId': setJobIdFilter(''); break;
+      default: break;
+    }
+  };
+
+  // Collect active filters
+  type ActiveFilter = { key: string; label: string };
+  const activeFilters: ActiveFilter[] = [
+    filter ? { key: 'region', label: `Region: ${filter}` } : undefined,
+    typeFilter ? { key: 'type', label: `Type: ${typeFilter}` } : undefined,
+    ownerFilter ? { key: 'owner', label: `Owner: ${ownerFilter}` } : undefined,
+    wasteFilter && wasteFilter !== 'All' ? { key: 'waste', label: `Waste: ${wasteFilter}` } : undefined,
+    jobIdFilter ? { key: 'jobId', label: `Job ID: ${jobIdFilter}` } : undefined,
+  ].filter((f): f is ActiveFilter => !!f);
+
   return (
     <div
       className="mb-6 w-full bg-gradient-to-r from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 rounded-xl shadow-lg"
       role="region"
       aria-label="Filter controls"
     >
+      {/* Active filter chips/tags */}
+      {activeFilters.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-2 items-center">
+          {activeFilters.map(f => (
+            <span key={f.key} className="inline-flex items-center bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-semibold shadow">
+              {f.label}
+              <button
+                className="ml-2 text-blue-700 dark:text-blue-300 hover:text-red-600 dark:hover:text-red-400 focus:outline-none"
+                aria-label={`Clear ${f.label}`}
+                onClick={() => clearFilter(f.key)}
+              >×</button>
+            </span>
+          ))}
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
         <div className="flex flex-col">
           <label htmlFor="region-select" className="mb-1 text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center">{icons.region}<span>Region</span></label>
@@ -103,10 +140,10 @@ export default function FilterBar({ instances }: { instances: any[] }) {
         </div>
         <div className="flex flex-col items-end">
           <button
-            className="px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700"
+            className={`px-4 py-2 rounded-lg font-semibold shadow transition focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 ${activeFilters.length > 0 ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
             onClick={resetFilters}
             aria-label="Reset all filters"
-          >Reset Filters</button>
+          >{activeFilters.length > 0 ? 'Reset All Filters' : 'Reset Filters'}</button>
         </div>
       </div>
     </div>

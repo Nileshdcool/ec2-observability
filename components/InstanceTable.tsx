@@ -16,6 +16,8 @@ import { useAppContext } from "../lib/AppContext";
 
 
 import React, { useState } from "react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 export default function InstanceTable({ instances }: { instances: any[] }) {
   const { filter, typeFilter, ownerFilter, wasteFilter, jobIdFilter } = useAppContext();
@@ -76,8 +78,8 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
   }
 
   return (
-  <div className="bg-white dark:bg-gray-900 rounded shadow p-6 overflow-x-auto">
-  <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">EC2 Instance Utilization</h2>
+    <div className="bg-white dark:bg-gray-900 rounded shadow p-6 overflow-x-auto">
+      <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">EC2 Instance Utilization</h2>
       <table className="min-w-[600px] w-full text-sm">
         <thead className="bg-gray-100 dark:bg-gray-800">
           <tr>
@@ -100,15 +102,24 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
             const wasteStatus = getWasteStatus(inst);
             let wasteClass = "";
             let wasteLabel = "OK";
+            let wasteIcon = null;
+            let wasteBorder = "";
             if (wasteStatus === "Underused") {
               wasteClass = "bg-yellow-50 dark:bg-yellow-900";
               wasteLabel = "Underused";
+              wasteIcon = <ExclamationTriangleIcon className="inline-block w-5 h-5 text-yellow-500 mr-1" title="Underused: Low CPU, High Uptime" />;
+              wasteBorder = "border-l-4 border-yellow-400";
             } else if (wasteStatus === "Over-provisioned") {
               wasteClass = "bg-orange-50 dark:bg-orange-900";
               wasteLabel = "Over-provisioned";
+              wasteIcon = <ExclamationTriangleIcon className="inline-block w-5 h-5 text-orange-500 mr-1" title="Over-provisioned: High CPU, Low Uptime" />;
+              wasteBorder = "border-l-4 border-orange-400";
+            } else {
+              wasteIcon = <CheckCircleIcon className="inline-block w-5 h-5 text-green-500 mr-1" title="OK" />;
+              wasteBorder = "border-l-4 border-green-400";
             }
             return (
-              <tr key={inst.id} className={wasteStatus !== "OK" ? wasteClass : ""}>
+              <tr key={inst.id} className={`${wasteStatus !== "OK" ? wasteClass : ""} ${wasteBorder}`}>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.name}</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.type}</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.region}</td>
@@ -119,13 +130,16 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">${inst.costPerHour}</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{inst.jobId}</td>
                 <td className="px-2 py-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                  {wasteStatus === "OK" ? (
-                    <span className="text-green-600 dark:text-green-400">OK</span>
-                  ) : wasteStatus === "Underused" ? (
-                    <span className="text-yellow-700 dark:text-yellow-300 font-semibold">Underused</span>
-                  ) : (
-                    <span className="text-orange-700 dark:text-orange-300 font-semibold">Over-provisioned</span>
-                  )}
+                  {wasteIcon}
+                  <span className={
+                    wasteStatus === "OK"
+                      ? "text-green-600 dark:text-green-400"
+                      : wasteStatus === "Underused"
+                      ? "text-yellow-700 dark:text-yellow-300 font-semibold"
+                      : "text-orange-700 dark:text-orange-300 font-semibold"
+                  }>
+                    {wasteLabel}
+                  </span>
                 </td>
               </tr>
             );

@@ -1,6 +1,6 @@
 
 export const costOverview = {
-    total: 2800,
+    total: 3800,
     dailyBurn: 95.2,
     projectedMonthly: 2950,
     trend: [86, 92, 95, 100, 98, 90, 95], // 7 days
@@ -18,42 +18,15 @@ export const costOverview = {
 export const attribution = [
     {
         dimension: 'us-east-1',
-        cost: 1600,
+        cost: 1000,
         timeSeries: [
-            { time: '2025-08-01', cost: 600 },
-            { time: '2025-08-02', cost: 500 },
-            { time: '2025-08-03', cost: 500 }
+            { time: '2025-08-01', cost: 350 },
+            { time: '2025-08-02', cost: 350 },
+            { time: '2025-08-03', cost: 300 }
         ]
     },
     {
         dimension: 'us-west-2',
-        cost: 1200,
-        timeSeries: [
-            { time: '2025-08-01', cost: 400 },
-            { time: '2025-08-02', cost: 400 },
-            { time: '2025-08-03', cost: 400 }
-        ]
-    },
-    {
-        dimension: 'eu-central-1',
-        cost: 600,
-        timeSeries: [
-            { time: '2025-08-01', cost: 200 },
-            { time: '2025-08-02', cost: 200 },
-            { time: '2025-08-03', cost: 200 }
-        ]
-    },
-    {
-        dimension: 'ap-southeast-1',
-        cost: 400,
-        timeSeries: [
-            { time: '2025-08-01', cost: 150 },
-            { time: '2025-08-02', cost: 150 },
-            { time: '2025-08-03', cost: 100 }
-        ]
-    },
-    {
-        dimension: 'team-bio',
         cost: 900,
         timeSeries: [
             { time: '2025-08-01', cost: 300 },
@@ -62,21 +35,30 @@ export const attribution = [
         ]
     },
     {
-        dimension: 'team-ml',
-        cost: 1100,
+        dimension: 'eu-central-1',
+        cost: 800,
         timeSeries: [
-            { time: '2025-08-01', cost: 400 },
-            { time: '2025-08-02', cost: 400 },
-            { time: '2025-08-03', cost: 300 }
+            { time: '2025-08-01', cost: 250 },
+            { time: '2025-08-02', cost: 300 },
+            { time: '2025-08-03', cost: 250 }
         ]
     },
     {
-        dimension: 'team-data',
-        cost: 800,
+        dimension: 'ap-southeast-1',
+        cost: 600,
         timeSeries: [
-            { time: '2025-08-01', cost: 300 },
-            { time: '2025-08-02', cost: 250 },
-            { time: '2025-08-03', cost: 250 }
+            { time: '2025-08-01', cost: 200 },
+            { time: '2025-08-02', cost: 200 },
+            { time: '2025-08-03', cost: 200 }
+        ]
+    },
+    {
+        dimension: 'team-bio',
+        cost: 500,
+        timeSeries: [
+            { time: '2025-08-01', cost: 170 },
+            { time: '2025-08-02', cost: 170 },
+            { time: '2025-08-03', cost: 160 }
         ]
     }
 ];

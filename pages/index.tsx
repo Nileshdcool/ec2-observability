@@ -29,6 +29,10 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ instances, costOverview, attribution, utilizationData }: any) {
+  // Ensure costOverview is available globally for CostAttributionPanel
+  if (typeof window !== "undefined") {
+    window.costOverview = costOverview;
+  }
   return (
     <motion.div
       className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 transition-colors"

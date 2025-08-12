@@ -143,6 +143,18 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
           <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">No usage data available.</div>
         )}
       </div>
+      {/* Legend for idle/spiky cues */}
+      <div className="flex items-center gap-4 mt-2 text-xs">
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-green-500"></span> Idle (CPU &lt; 2)</span>
+        <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-red-500"></span> Spike (CPU &gt; 32)</span>
+      </div>
+      {/* Summary message for idle/spiky behavior */}
+      {hasData && (
+        <div className="mt-1 text-xs text-red-600 dark:text-red-400 font-semibold">
+          {filteredData.filter(d => d.cpu < 2).length > 0 && `${filteredData.filter(d => d.cpu < 2).length} idle point(s)`}
+          {filteredData.filter(d => d.cpu > 32).length > 0 && `${filteredData.filter(d => d.cpu > 32).length > 0 && filteredData.filter(d => d.cpu < 2).length > 0 ? ', ' : ''}${filteredData.filter(d => d.cpu > 32).length} spike(s)`}
+        </div>
+      )}
       <div className="mt-2 text-xs text-gray-800 dark:text-gray-200">
         {hasData ? (
           <>Selected range: {timeFilteredData[selectedRange.startIndex]?.time} to {timeFilteredData[selectedRange.endIndex]?.time}</>
