@@ -1,20 +1,19 @@
 # Use official Node.js LTS image
-
 FROM node:20 AS builder
 WORKDIR /app
 
-# Install build dependencies
+# Install dependencies
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci
 
-# Copy all files and build
+# Copy source files and build
 COPY . .
 RUN npm run build
 
 FROM node:20 AS runner
 WORKDIR /app
 
-# Only copy necessary files for running the app
+# Copy only necessary files from builder
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
