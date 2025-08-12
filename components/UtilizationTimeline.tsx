@@ -30,7 +30,7 @@ interface Annotation {
 
 const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Annotation[]; instanceId?: string }> = ({ usageData, annotations = [], instanceId }) => {
   // Time range toggle
-  const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d'>('7d');
+  const [timeRange, setTimeRange] = useState<'1d' | '7d' | '14d'>('7d');
   // Server selection
   const [selectedInstance, setSelectedInstance] = useState<string>(instanceId || '');
   // Get filters from context
@@ -70,11 +70,11 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
       filteredUsageData = usageData.filter((d: any) => d.instanceId === activeInstanceId);
     }
   }
-  // Time range filtering (simulate for demo)
+  // Time range filtering (days)
   let timeFilteredData = filteredUsageData;
-  if (timeRange === '1h') timeFilteredData = filteredUsageData.slice(-1);
-  else if (timeRange === '24h') timeFilteredData = filteredUsageData.slice(-24);
-  // else 7d: show all
+  if (timeRange === '1d') timeFilteredData = filteredUsageData.slice(-1);
+  else if (timeRange === '7d') timeFilteredData = filteredUsageData.slice(-7);
+  else if (timeRange === '14d') timeFilteredData = filteredUsageData.slice(-14);
 
   const [selectedRange, setSelectedRange] = useState({ startIndex: 0, endIndex: Math.max(0, timeFilteredData.length - 1) });
 
@@ -104,9 +104,9 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-800 dark:text-gray-200">Range:</span>
-          <button className={`px-2 py-1 rounded text-xs ${timeRange === '1h' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('1h')}>1h</button>
-          <button className={`px-2 py-1 rounded text-xs ${timeRange === '24h' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('24h')}>24h</button>
+          <button className={`px-2 py-1 rounded text-xs ${timeRange === '1d' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('1d')}>1d</button>
           <button className={`px-2 py-1 rounded text-xs ${timeRange === '7d' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('7d')}>7d</button>
+          <button className={`px-2 py-1 rounded text-xs ${timeRange === '14d' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('14d')}>14d</button>
         </div>
       </div>
       <div className="w-full max-w-full h-80">
@@ -132,7 +132,7 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
                 d.cpu < 2 ? (
                   <ReferenceDot key={`idle-${idx}`} x={d.time} y={d.cpu} r={4} fill="#22c55e" stroke="none" label="Idle" />
                 ) : d.cpu > 32 ? (
-                  <ReferenceDot key={`spiky-${idx}`} x={d.time} y={d.cpu} r={4} fill="#ef4444" stroke="none" label="Spike" />
+                  <ReferenceDot key={`spiky-${idx}`} x={d.time} y={d.cpu} r={4} fill="#ef4444" stroke="none" />
                 ) : null
               ))}
               {/* Time selection */}
@@ -157,7 +157,7 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
       )}
       <div className="mt-2 text-xs text-gray-800 dark:text-gray-200">
         {hasData ? (
-          <>Selected range: {timeFilteredData[selectedRange.startIndex]?.time} to {timeFilteredData[selectedRange.endIndex]?.time}</>
+          <>Selected range: {filteredData[0]?.time} to {filteredData[filteredData.length - 1]?.time}</>
         ) : (
           <>No data to display.</>
         )}

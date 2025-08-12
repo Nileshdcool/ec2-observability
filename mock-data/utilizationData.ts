@@ -2,64 +2,83 @@
 // Each entry has instanceId, time, cpu, ram
 
 export const utilizationData = [
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h1",
-    time: "2025-08-01",
-    cpu: 10,
-    ram: 1.5
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h1",
-    time: "2025-08-02",
-    cpu: 12,
-    ram: 1.7
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h2",
-    time: "2025-08-01",
-    cpu: 30,
-    ram: 60
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h2",
-    time: "2025-08-02",
-    cpu: 32,
-    ram: 62
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h3",
-    time: "2025-08-01",
-    cpu: 3,
-    ram: 15
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h3",
-    time: "2025-08-02",
-    cpu: 4,
-    ram: 16
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h4",
-    time: "2025-08-01",
-    cpu: 1,
-    ram: 0.5
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h4",
-    time: "2025-08-02",
-    cpu: 1,
-    ram: 0.5
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h5",
-    time: "2025-08-01",
-    cpu: 40,
-    ram: 380
-  },
-  {
-    instanceId: "i-0a1b2c3d4e5f6g7h5",
-    time: "2025-08-02",
-    cpu: 42,
-    ram: 382
-  }
+  // Idle-Node (t3.micro, i-0a1b2c3d4e5f6g7h1): low, steady usage, sometimes idle
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-01", cpu: 3, ram: 0.7 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-02", cpu: 2, ram: 0.6 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-03", cpu: 1, ram: 0.5 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-04", cpu: 0.5, ram: 0.4 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-05", cpu: 0.2, ram: 0.3 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-06", cpu: 1.2, ram: 0.5 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-07", cpu: 2.5, ram: 0.6 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-08", cpu: 1.8, ram: 0.5 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-09", cpu: 0.9, ram: 0.4 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-10", cpu: 0.3, ram: 0.3 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-11", cpu: 1.1, ram: 0.5 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-12", cpu: 2.2, ram: 0.6 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-13", cpu: 1.7, ram: 0.5 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h1", time: "2025-08-14", cpu: 0.8, ram: 0.4 },
+
+  // Burst-Node (c5.9xlarge, i-0a1b2c3d4e5f6g7h2): high, spiky usage
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-01", cpu: 28, ram: 55 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-02", cpu: 36, ram: 62 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-03", cpu: 32, ram: 60 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-04", cpu: 18, ram: 40 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-05", cpu: 8, ram: 20 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-06", cpu: 40, ram: 70 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-07", cpu: 35, ram: 65 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-08", cpu: 30, ram: 60 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-09", cpu: 15, ram: 35 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-10", cpu: 10, ram: 25 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-11", cpu: 38, ram: 68 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-12", cpu: 34, ram: 63 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-13", cpu: 29, ram: 58 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h2", time: "2025-08-14", cpu: 12, ram: 28 },
+
+  // Balanced-Node (m5.xlarge, i-0a1b2c3d4e5f6g7h3): moderate, steady usage
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-01", cpu: 3, ram: 13 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-02", cpu: 4, ram: 15 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-03", cpu: 3.5, ram: 14 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-04", cpu: 2.8, ram: 12 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-05", cpu: 2.2, ram: 10 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-06", cpu: 4.1, ram: 16 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-07", cpu: 3.7, ram: 15 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-08", cpu: 3.2, ram: 13 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-09", cpu: 2.5, ram: 11 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-10", cpu: 2.1, ram: 9 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-11", cpu: 4.2, ram: 16 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-12", cpu: 3.8, ram: 15 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-13", cpu: 3.3, ram: 13 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h3", time: "2025-08-14", cpu: 2.6, ram: 11 },
+
+  // Idle-Node-2 (t2.nano, i-0a1b2c3d4e5f6g7h4): very low, almost always idle
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-01", cpu: 0.2, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-02", cpu: 0.1, ram: 0.1 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-03", cpu: 0.3, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-04", cpu: 0.1, ram: 0.1 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-05", cpu: 0.2, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-06", cpu: 0.1, ram: 0.1 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-07", cpu: 0.3, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-08", cpu: 0.1, ram: 0.1 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-09", cpu: 0.2, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-10", cpu: 0.1, ram: 0.1 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-11", cpu: 0.3, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-12", cpu: 0.1, ram: 0.1 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-13", cpu: 0.2, ram: 0.2 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h4", time: "2025-08-14", cpu: 0.1, ram: 0.1 },
+
+  // Burst-Node-2 (r5.12xlarge, i-0a1b2c3d4e5f6g7h5): very high, with spikes and idle
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-01", cpu: 38, ram: 370 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-02", cpu: 44, ram: 380 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-03", cpu: 41, ram: 375 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-04", cpu: 20, ram: 180 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-05", cpu: 8, ram: 80 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-06", cpu: 48, ram: 384 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-07", cpu: 45, ram: 382 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-08", cpu: 39, ram: 378 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-09", cpu: 18, ram: 170 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-10", cpu: 10, ram: 90 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-11", cpu: 47, ram: 384 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-12", cpu: 43, ram: 382 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-13", cpu: 40, ram: 380 },
+  { instanceId: "i-0a1b2c3d4e5f6g7h5", time: "2025-08-14", cpu: 12, ram: 100 },
 ];
