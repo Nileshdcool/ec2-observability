@@ -154,11 +154,7 @@ docker-compose up --build
 ### Dashboard Overview
 ![Dashboard Overview](./public/image-1.png)
 
-### Cost Attribution Panel
 ![Cost Attribution Panel](./public/image-2.png)
-
-### Filtering & Theme Toggle
-![Theme Toggle and Filters](./public/window.svg)
 
 ---
 
