@@ -1,6 +1,6 @@
 # EC2 Observability Dashboard
 
-A cloud-native dashboard for visualizing EC2 server utilization, cost attribution, and waste, designed for bioinformaticians and technical teams in research-intensive fields.
+A cloud-native dashboard for visualizing EC2 server utilization, cost attribution, and waste, designed for bioinformaticians and technical teams in research-intensive fields. Now features advanced filtering, interactive charts, and mock API routes for demo/testing.
 
 ## Table of Contents
 
@@ -22,16 +22,20 @@ This prototype helps users explore, interpret, and act on EC2 server utilization
 
 ---
 
+
 ## Features
 
-- **EC2 Instance Utilization Table**: Sort, filter, and flag underused/over-provisioned servers.
-- **Cost Attribution Panel**: Break down costs by region, instance type, team, or job ID; toggle between table, bar, and pie charts.
-- **Live Cloud Cost Overview**: View total cost, daily burn rate, projected monthly spend, and trends.
-- **Utilization Timeline Graph**: Inspect CPU, RAM, GPU usage for any server over 1h, 24h, or 7d.
-- **Custom Filtering Layer**: Filter dashboard by region, type, owner, waste level, or job ID; reset filters easily.
+- **EC2 Instance Utilization Table**: Sort, filter, and flag underused/over-provisioned servers. Waste logic: Underused (low CPU, high uptime), Over-provisioned (high CPU, low usage).
+- **Cost Attribution Panel**: Break down costs by region, instance type, team, or job ID; toggle between table, bar, and pie charts. Compare by dimension or time series.
+- **Live Cloud Cost Overview**: View total cost, daily burn rate, projected monthly spend, and trends. Detect spikes/drops with visual cues.
+- **Utilization Timeline Graph**: Inspect CPU, RAM, GPU usage for any server over 1d, 7d, or 14d. Annotate idle/spiky behavior, select server and time range interactively.
+- **Custom Filtering Layer**: Filter dashboard by region, type, owner, waste level, or job ID. All filters persist in localStorage and apply across all components. Reset filters easily.
+- **Theme Toggle**: Floating button for dark/light mode, persists user preference.
+- **API Routes (Mock Data)**: `/api/ec2-instances`, `/api/costs`, `/api/utilization` serve demo data for all components.
 - **Responsive UI**: Modern, accessible design with dark mode support.
 
 ---
+
 
 ## Tech Stack
 
@@ -39,25 +43,28 @@ This prototype helps users explore, interpret, and act on EC2 server utilization
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS, PostCSS
 - **Charts**: Recharts
+- **Animation**: Framer Motion
 - **Testing**: Jest, React Testing Library
 - **Containerization**: Docker, Docker Compose
 
 ---
 
+
 ## Project Structure
 
 ```
-components/         # UI components (tables, panels, charts, filters)
-lib/                # Context providers (AppContext, ThemeContext)
+components/         # UI components (tables, panels, charts, filters, theme toggle)
+lib/                # Context providers (AppContext: filters, ThemeContext: dark mode)
 mock-data/          # Simulated EC2, cost, and utilization data
-pages/              # Next.js pages and API routes
+pages/              # Next.js pages and API routes (costs, ec2-instances, utilization)
 styles/             # Global styles (Tailwind)
-__tests__/          # Unit tests for components
+__tests__/          # Unit tests for all components
 Dockerfile          # Production container build
 docker-compose.yml  # Local orchestration
 ```
 
 ---
+
 
 ## Setup & Usage
 
@@ -82,42 +89,53 @@ Visit [http://localhost:3000](http://localhost:3000).
 docker-compose up --build
 ```
 
+### API Endpoints (Demo)
+- `/api/ec2-instances` — returns mock EC2 instance data
+- `/api/costs` — returns mock cost overview and attribution
+- `/api/utilization` — returns mock utilization time series
+
 ---
+
 
 ## Component Details
 
 ### 1. EC2 Instance Utilization Table
-
 - Displays EC2 instances with CPU, RAM, GPU, uptime, cost/hour, job ID.
 - Flags underused (low CPU, high uptime) and over-provisioned (high CPU, low usage) servers.
-- Supports sorting and filtering by region, type, owner, job ID, and waste level.
+- Sorting and filtering by region, type, owner, job ID, and waste level. Filter state persists in localStorage.
+- Waste status is visually highlighted (color, icon, border).
 
 ### 2. Cost Attribution Panel
-
-- Breaks down costs by metadata (region, type, team, job ID).
+- Breaks down costs by metadata (region, type, owner/team, job ID).
 - Toggle between table, bar chart, and pie chart views.
-- Shows total, attributed, and unaccounted costs.
-- Compare across dimensions and time ranges.
+- Compare by dimension or time series (if available).
+- Shows total, attributed, and unaccounted costs (difference from overview).
+- Interactive controls for dimension and comparison type.
 
 ### 3. Live Cloud Cost Overview
-
 - KPIs: total cost, daily burn, projected monthly spend, change vs last month.
-- Trend chart (7d/24h) with visual cues for spikes/drops.
-- Peak and lowest day highlights.
+- Trend chart (7d/24h) with visual cues for spikes/drops (anomaly detection).
+- Peak and lowest day highlights, summary of anomalies.
 
 ### 4. Utilization Timeline Graph
-
-- Visualizes CPU, RAM, GPU usage for selected server.
-- Toggle time range (1h, 24h, 7d).
-- Annotates idle/spiky behavior.
+- Visualizes CPU, RAM, GPU usage for selected server and time range (1d, 7d, 14d).
+- Annotates idle (CPU < 2) and spiky (CPU > 32) behavior with color cues.
+- Interactive server selection and time range brush.
+- Displays summary of idle/spiky points and selected range.
 
 ### 5. Custom Filtering Layer
-
 - Filters for region, type, owner, waste level, job ID.
-- Applies filters across all dashboard components.
-- Reset filters with one click.
+- All filters apply globally and persist in localStorage.
+- Reset filters with one click. Active filters shown as chips/tags.
+
+### 6. Theme Toggle
+- Floating button for dark/light mode, persists user preference.
+
+### 7. API Routes (Demo)
+- `/api/ec2-instances`, `/api/costs`, `/api/utilization` serve mock data for all components.
 
 ---
+
 
 ## Design Decisions & Tradeoffs
 
@@ -125,8 +143,11 @@ docker-compose up --build
 - **Assumptions**: "Waste" is defined as underused (low CPU, high uptime) or over-provisioned (high CPU, low usage).
 - **Feature Not Built**: Real-time AWS API integration; simulated data used for demo and assessment.
 - **Accessibility**: All controls are keyboard-accessible; color cues support dark mode.
+- **State Management**: Filters and theme persist in localStorage for user convenience.
+- **Testing**: All major components have Jest/RTL unit tests.
 
 ---
+
 
 ## Screenshots
 
@@ -136,7 +157,11 @@ docker-compose up --build
 ### Cost Attribution Panel
 ![Cost Attribution Panel](./public/image-2.png)
 
+### Filtering & Theme Toggle
+![Theme Toggle and Filters](./public/window.svg)
+
 ---
+
 
 ## License
 
