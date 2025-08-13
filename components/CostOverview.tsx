@@ -42,7 +42,7 @@ export default function CostOverview({ costOverview, instances }: { costOverview
 
   return (
   <div className="bg-white dark:bg-gray-900 p-6 rounded shadow flex flex-col gap-4 w-full max-w-2xl mx-auto">
-  <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">Cloud Cost Overview</h2>
+  {/* Removed duplicate header, now handled by drag-handle in grid */}
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-lg">
         <div className="flex flex-col">
           <span className="text-gray-900 dark:text-gray-100">Total Cost</span>

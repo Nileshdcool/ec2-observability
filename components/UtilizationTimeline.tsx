@@ -80,7 +80,7 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
 
   return (
     <div className="bg-white dark:bg-gray-900 p-6 rounded shadow flex flex-col items-center w-full">
-      <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">Instance Utilization Timeline</h2>
+  {/* Removed duplicate header, now handled by drag-handle in grid */}
       {/* Server selection and time range toggle */}
       <div className="flex gap-4 mb-2 w-full justify-between items-center">
         <div className="flex items-center gap-2">

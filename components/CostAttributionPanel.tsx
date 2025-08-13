@@ -69,7 +69,7 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
   <div className="bg-white dark:bg-gray-900 p-6 rounded shadow">
       {/* Title moved to top right button bar, removed duplicate */}
       <div className="flex justify-between items-center mb-4">
-        <div className="font-bold text-xl text-blue-600 dark:text-blue-300">Cost Attribution</div>
+        {/* Removed duplicate header, now handled by drag-handle in grid */}
         <div className="flex gap-2">
           <button
             className={`p-2 rounded ${view === 'table' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`}
