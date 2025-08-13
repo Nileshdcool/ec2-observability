@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { WasteFilter } from "../types/enums";
 
 // Define the shape of your global state
 import type { AppState } from "../types/app";
@@ -11,7 +12,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [filter, setFilter] = useState<string>('');
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [ownerFilter, setOwnerFilter] = useState<string>('');
-  const [wasteFilter, setWasteFilter] = useState<string>('All');
+  const [wasteFilter, setWasteFilter] = useState<WasteFilter>(WasteFilter.All);
   const [jobIdFilter, setJobIdFilter] = useState<string>('');
 
   // On client, update state from localStorage after mount
@@ -20,7 +21,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setFilter(localStorage.getItem('filter') || '');
       setTypeFilter(localStorage.getItem('typeFilter') || '');
       setOwnerFilter(localStorage.getItem('ownerFilter') || '');
-      setWasteFilter(localStorage.getItem('wasteFilter') || 'All');
+  const storedWaste = localStorage.getItem('wasteFilter');
+  setWasteFilter((storedWaste && Object.values(WasteFilter).includes(storedWaste as WasteFilter)) ? storedWaste as WasteFilter : WasteFilter.All);
       setJobIdFilter(localStorage.getItem('jobIdFilter') || '');
     }
   }, []);
@@ -36,7 +38,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setFilter('');
     setTypeFilter('');
     setOwnerFilter('');
-    setWasteFilter('All');
+  setWasteFilter(WasteFilter.All);
     setJobIdFilter('');
     if (typeof window !== "undefined" && window.localStorage) {
       localStorage.removeItem('filter');

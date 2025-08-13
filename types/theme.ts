@@ -1,6 +1,9 @@
 // Theme context types
 
-export type Theme = 'light' | 'dark';
+export enum Theme {
+  Light = 'light',
+  Dark = 'dark',
+}
 
 export interface ThemeContextProps {
   theme: Theme;

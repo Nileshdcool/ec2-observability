@@ -1,14 +1,15 @@
 
 
+import { WasteFilter } from "../types/enums";
 // Waste logic: Underused (low CPU, high uptime), Over-provisioned (high CPU, low usage)
-export function getWasteStatus(inst: EC2Instance) {
+export function getWasteStatus(inst: EC2Instance): WasteFilter {
   if (inst.cpu < 2 && inst.uptime > 24) {
-    return "Underused";
+    return WasteFilter.Underused;
   }
   if (inst.cpu > 16 && inst.uptime < 24) {
-    return "Over-provisioned";
+    return WasteFilter.OverProvisioned;
   }
-  return "OK";
+  return WasteFilter.OK;
 }
 
 import type { EC2Instance } from "../types/ec2";
