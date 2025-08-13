@@ -11,7 +11,7 @@ export function getWasteStatus(inst: EC2Instance) {
   return "OK";
 }
 
-import { EC2Instance } from "@/mock-data/ec2Instances";
+import type { EC2Instance } from "../types/ec2";
 import { useAppContext } from "../lib/AppContext";
 
 

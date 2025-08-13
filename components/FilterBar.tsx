@@ -1,3 +1,4 @@
+import { ActiveFilter } from "@/types/app";
 import { useAppContext } from "../lib/AppContext";
 
 export default function FilterBar({ instances }: { instances: any[] }) {
@@ -33,7 +34,6 @@ export default function FilterBar({ instances }: { instances: any[] }) {
   };
 
   // Collect active filters
-  type ActiveFilter = { key: string; label: string };
   const activeFilters: ActiveFilter[] = [
     filter ? { key: 'region', label: `Region: ${filter}` } : undefined,
     typeFilter ? { key: 'type', label: `Type: ${typeFilter}` } : undefined,

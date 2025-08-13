@@ -14,19 +14,8 @@ import {
 } from "recharts";
 
 
-interface UsageDatum {
-  time: string;
-  cpu: number;
-  ram: number;
-  gpu?: number;
-  instanceId?: string;
-}
 
-interface Annotation {
-  time: string;
-  cpu: number;
-  label: string;
-}
+import type { UsageDatum, Annotation } from "../types/ec2";
 
 const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Annotation[]; instanceId?: string }> = ({ usageData, annotations = [], instanceId }) => {
   // Time range toggle
