@@ -1,0 +1,27 @@
+
+/* Custom styles for consistent dashboard grid */
+.react-grid-layout {
+	gap: 24px !important;
+}
+.react-grid-item {
+	border-radius: 0.75rem;
+	box-shadow: 0 2px 8px 0 rgba(0,0,0,0.07);
+	background: var(--tw-bg-opacity,1) #fff;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 200px;
+	max-width: 100%;
+	transition: box-shadow 0.2s;
+}
+.react-grid-item > div {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+.react-grid-item.resizing {
+	z-index: 2;
+	box-shadow: 0 4px 16px 0 rgba(0,0,0,0.12);
+}
+.react-grid-item .react-resizable-handle {
+	z-index: 3;
+}
