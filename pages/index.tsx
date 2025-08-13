@@ -38,7 +38,6 @@ export default function Home({ instances, costOverview, attribution, utilization
 
   // Default layout for 4 panels
   // All panels same size: 1x1 in a 2x2 grid
-  // Consistent 2x2 grid, each panel always 1x1, min/max enforced for responsiveness
   const defaultLayout = [
     { i: "costOverview", x: 0, y: 0, w: 1, h: 1, minW: 1, minH: 1, maxW: 1, maxH: 1, static: false },
     { i: "costAttribution", x: 1, y: 0, w: 1, h: 1, minW: 1, minH: 1, maxW: 1, maxH: 1, static: false },
@@ -84,32 +83,26 @@ export default function Home({ instances, costOverview, attribution, utilization
       <div className="mb-8">
         <ResponsiveGridLayout
           className="layout dashboard-grid"
-          layouts={{ lg: layout, md: layout, sm: layout }}
+          layouts={{ lg: layout }}
           breakpoints={{ lg: 900, md: 600, sm: 0 }}
           cols={{ lg: 2, md: 1, sm: 1 }}
-          rowHeight={340}
+          rowHeight={320}
           margin={[24, 24]}
           containerPadding={[0, 0]}
           isResizable={false}
           isDraggable
-          draggableHandle=".drag-handle"
           onLayoutChange={(l: any) => setLayout(l)}
-          style={{ minHeight: 0 }}
         >
           <div key="costOverview" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full w-full">
-            <div className="drag-handle cursor-move select-none font-semibold text-blue-700 dark:text-blue-300 mb-2">Cloud Cost Overview</div>
             <CostOverview costOverview={costOverview} instances={instances} />
           </div>
           <div key="costAttribution" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full w-full">
-            <div className="drag-handle cursor-move select-none font-semibold text-blue-700 dark:text-blue-300 mb-2">Cost Attribution</div>
             <CostAttributionPanel attribution={attribution} instances={instances} />
           </div>
           <div key="instanceTable" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col overflow-auto h-full w-full">
-            <div className="drag-handle cursor-move select-none font-semibold text-blue-700 dark:text-blue-300 mb-2">EC2 Instance Utilization</div>
             <InstanceTable instances={instances} />
           </div>
           <div key="utilizationTimeline" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full w-full">
-            <div className="drag-handle cursor-move select-none font-semibold text-blue-700 dark:text-blue-300 mb-2">Instance Utilization Timeline</div>
             <UtilizationTimeline usageData={utilizationData} annotations={costOverview.annotations || []} />
           </div>
         </ResponsiveGridLayout>

@@ -1,6 +1,5 @@
 
 /* Custom styles for consistent dashboard grid */
-
 .react-grid-layout {
 	gap: 24px !important;
 }
@@ -11,17 +10,13 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
-	min-height: 320px;
+	min-height: 200px;
 	max-width: 100%;
-	width: 100%;
-	height: 100%;
 	transition: box-shadow 0.2s;
 }
 .react-grid-item > div {
 	flex: 1 1 auto;
 	min-height: 0;
-	width: 100%;
-	height: 100%;
 }
 .react-grid-item.resizing {
 	z-index: 2;

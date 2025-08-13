@@ -80,7 +80,7 @@ export default function InstanceTable({ instances }: { instances: any[] }) {
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded shadow p-6 overflow-x-auto">
-  {/* Removed duplicate header, now handled by drag-handle in grid */}
+      <h2 className="font-bold text-xl text-blue-600 dark:text-blue-300 mb-2">EC2 Instance Utilization</h2>
       <table className="min-w-[600px] w-full text-sm">
         <thead className="bg-gray-100 dark:bg-gray-800">
           <tr>
