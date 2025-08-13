@@ -1,6 +1,9 @@
 
 
 import InstanceTable from "@/components/InstanceTable";
+import RDSInstanceTable from "@/components/RDSInstanceTable";
+import S3BucketTable from "@/components/S3BucketTable";
+import LambdaFunctionTable from "@/components/LambdaFunctionTable";
 import CostAttributionPanel from "@/components/CostAttributionPanel";
 import CostOverview from "@/components/CostOverview";
 import UtilizationTimeline from "@/components/UtilizationTimeline";
@@ -31,8 +34,10 @@ export async function getServerSideProps() {
   };
 }
 
+import React, { useState } from "react";
+
 export default function Home({ instances, costOverview, attribution, utilizationData }: any) {
-  // Ensure costOverview is available globally for CostAttributionPanel
+  const [tab, setTab] = useState<'ec2' | 'rds' | 's3' | 'lambda'>('ec2');
   if (typeof window !== "undefined") {
     window.costOverview = costOverview;
   }
@@ -44,29 +49,59 @@ export default function Home({ instances, costOverview, attribution, utilization
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-300">EC2 Observability Dashboard</h1>
-        <p className="text-gray-800 dark:text-gray-200">Gain insights on EC2 usage, costs, and waste for research teams</p>
+        <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-300">Cloud Observability Dashboard</h1>
+        <p className="text-gray-800 dark:text-gray-200">Gain insights on AWS usage, costs, and waste for research teams</p>
       </header>
 
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-      >
-        <FilterBar instances={instances} />
-      </motion.div>
+      {/* Tabs for resource selection */}
+      <div className="flex gap-2 mb-4">
+        <button
+          className={`px-4 py-2 rounded-t ${tab === 'ec2' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}
+          onClick={() => setTab('ec2')}
+        >
+          EC2
+        </button>
+        <button
+          className={`px-4 py-2 rounded-t ${tab === 'rds' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}
+          onClick={() => setTab('rds')}
+        >
+          RDS
+        </button>
+        <button
+          className={`px-4 py-2 rounded-t ${tab === 's3' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}
+          onClick={() => setTab('s3')}
+        >
+          S3
+        </button>
+        <button
+          className={`px-4 py-2 rounded-t ${tab === 'lambda' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}
+          onClick={() => setTab('lambda')}
+        >
+          Lambda
+        </button>
+      </div>
 
-      {/* Overview */}
-      <motion.div
-        className="grid md:grid-cols-2 gap-6 mb-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
-      >
-        <CostOverview costOverview={costOverview} instances={instances} />
-        <CostAttributionPanel attribution={attribution} instances={instances} />
-      </motion.div>
+      {/* Filters and Overview only for EC2 */}
+      {tab === 'ec2' && (
+        <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+          >
+            <FilterBar instances={instances} />
+          </motion.div>
+          <motion.div
+            className="grid md:grid-cols-2 gap-6 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          >
+            <CostOverview costOverview={costOverview} instances={instances} />
+            <CostAttributionPanel attribution={attribution} instances={instances} />
+          </motion.div>
+        </>
+      )}
 
       <motion.div
         className="grid md:grid-cols-2 gap-6"
@@ -74,15 +109,17 @@ export default function Home({ instances, costOverview, attribution, utilization
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
       >
-        <InstanceTable instances={instances} />
-        {/* Pass usageData and annotations if available from API, fallback to [] */}
-        <UtilizationTimeline usageData={utilizationData} annotations={costOverview.annotations || []} />
+        {tab === 'ec2' && <InstanceTable instances={instances} />}
+        {tab === 'ec2' && <UtilizationTimeline usageData={utilizationData} annotations={costOverview.annotations || []} />}
+        {tab === 'rds' && <RDSInstanceTable />}
+        {tab === 's3' && <S3BucketTable />}
+        {tab === 'lambda' && <LambdaFunctionTable />}
       </motion.div>
 
       {/* Floating theme toggle button */}
       <ThemeToggle />
-  {/* App version and environment info */}
-  <AppFooter />
+      {/* App version and environment info */}
+      <AppFooter />
     </motion.div>
   );
 }
