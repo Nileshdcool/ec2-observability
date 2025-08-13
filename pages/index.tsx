@@ -6,8 +6,6 @@ import UtilizationTimeline from "@/components/UtilizationTimeline";
 import ThemeToggle from "@/components/ThemeToggle";
 import FilterBar from "@/components/FilterBar";
 import { motion } from "framer-motion";
-import ResponsiveGridLayout from "@/components/DashboardGrid";
-import { useEffect, useState } from "react";
 
 export async function getServerSideProps() {
   const baseUrl = process.env.BASE_URL || "http://localhost:3000";
@@ -35,29 +33,6 @@ export default function Home({ instances, costOverview, attribution, utilization
   if (typeof window !== "undefined") {
     window.costOverview = costOverview;
   }
-
-  // Default layout for 4 panels
-  // All panels same size: 1x1 in a 2x2 grid
-  const defaultLayout = [
-    { i: "costOverview", x: 0, y: 0, w: 1, h: 1, minW: 1, minH: 1, maxW: 1, maxH: 1, static: false },
-    { i: "costAttribution", x: 1, y: 0, w: 1, h: 1, minW: 1, minH: 1, maxW: 1, maxH: 1, static: false },
-    { i: "instanceTable", x: 0, y: 1, w: 1, h: 1, minW: 1, minH: 1, maxW: 1, maxH: 1, static: false },
-    { i: "utilizationTimeline", x: 1, y: 1, w: 1, h: 1, minW: 1, minH: 1, maxW: 1, maxH: 1, static: false }
-  ];
-  const [layout, setLayout] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = window.localStorage.getItem("dashboardLayout");
-      return saved ? JSON.parse(saved) : defaultLayout;
-    }
-    return defaultLayout;
-  });
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("dashboardLayout", JSON.stringify(layout));
-    }
-  }, [layout]);
-
   return (
     <motion.div
       className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 transition-colors"
@@ -79,34 +54,27 @@ export default function Home({ instances, costOverview, attribution, utilization
         <FilterBar instances={instances} />
       </motion.div>
 
-      {/* Customizable Dashboard Panels */}
-      <div className="mb-8">
-        <ResponsiveGridLayout
-          className="layout dashboard-grid"
-          layouts={{ lg: layout }}
-          breakpoints={{ lg: 900, md: 600, sm: 0 }}
-          cols={{ lg: 2, md: 1, sm: 1 }}
-          rowHeight={320}
-          margin={[24, 24]}
-          containerPadding={[0, 0]}
-          isResizable={false}
-          isDraggable
-          onLayoutChange={(l: any) => setLayout(l)}
-        >
-          <div key="costOverview" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full w-full">
-            <CostOverview costOverview={costOverview} instances={instances} />
-          </div>
-          <div key="costAttribution" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full w-full">
-            <CostAttributionPanel attribution={attribution} instances={instances} />
-          </div>
-          <div key="instanceTable" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col overflow-auto h-full w-full">
-            <InstanceTable instances={instances} />
-          </div>
-          <div key="utilizationTimeline" className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 flex flex-col h-full w-full">
-            <UtilizationTimeline usageData={utilizationData} annotations={costOverview.annotations || []} />
-          </div>
-        </ResponsiveGridLayout>
-      </div>
+      {/* Overview */}
+      <motion.div
+        className="grid md:grid-cols-2 gap-6 mb-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+      >
+        <CostOverview costOverview={costOverview} instances={instances} />
+        <CostAttributionPanel attribution={attribution} instances={instances} />
+      </motion.div>
+
+      <motion.div
+        className="grid md:grid-cols-2 gap-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+      >
+        <InstanceTable instances={instances} />
+        {/* Pass usageData and annotations if available from API, fallback to [] */}
+        <UtilizationTimeline usageData={utilizationData} annotations={costOverview.annotations || []} />
+      </motion.div>
 
       {/* Floating theme toggle button */}
       <ThemeToggle />
