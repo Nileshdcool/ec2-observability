@@ -1,4 +1,5 @@
 
+
 import InstanceTable from "@/components/InstanceTable";
 import CostAttributionPanel from "@/components/CostAttributionPanel";
 import CostOverview from "@/components/CostOverview";
@@ -6,6 +7,8 @@ import UtilizationTimeline from "@/components/UtilizationTimeline";
 import ThemeToggle from "@/components/ThemeToggle";
 import FilterBar from "@/components/FilterBar";
 import { motion } from "framer-motion";
+import { getAppVersion } from "../lib/version";
+import AppFooter from "@/components/AppFooter";
 
 export async function getServerSideProps() {
   const baseUrl = process.env.BASE_URL || "http://localhost:3000";
@@ -35,7 +38,7 @@ export default function Home({ instances, costOverview, attribution, utilization
   }
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 transition-colors"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 transition-colors flex flex-col min-h-screen"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -78,6 +81,8 @@ export default function Home({ instances, costOverview, attribution, utilization
 
       {/* Floating theme toggle button */}
       <ThemeToggle />
+  {/* App version and environment info */}
+  <AppFooter />
     </motion.div>
   );
 }
