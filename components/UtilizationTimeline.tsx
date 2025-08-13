@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { WasteFilter, TimeRange } from "../types/enums";
 import { useAppContext } from "../lib/AppContext";
 import { instances as allInstances } from "../mock-data/ec2Instances";
 import {
@@ -14,23 +15,12 @@ import {
 } from "recharts";
 
 
-interface UsageDatum {
-  time: string;
-  cpu: number;
-  ram: number;
-  gpu?: number;
-  instanceId?: string;
-}
 
-interface Annotation {
-  time: string;
-  cpu: number;
-  label: string;
-}
+import type { UsageDatum, Annotation } from "../types/ec2";
 
 const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Annotation[]; instanceId?: string }> = ({ usageData, annotations = [], instanceId }) => {
   // Time range toggle
-  const [timeRange, setTimeRange] = useState<'1d' | '7d' | '14d'>('7d');
+  const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.SevenDays);
   // Server selection
   const [selectedInstance, setSelectedInstance] = useState<string>(instanceId || '');
   // Get filters from context
@@ -42,11 +32,11 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
   if (typeFilter) filteredInstances = filteredInstances.filter(inst => inst.type === typeFilter);
   if (ownerFilter) filteredInstances = filteredInstances.filter(inst => inst.owner === ownerFilter);
   if (jobIdFilter) filteredInstances = filteredInstances.filter(inst => inst.jobId === jobIdFilter);
-  if (wasteFilter && wasteFilter !== "All") {
+  if (wasteFilter && wasteFilter !== WasteFilter.All) {
     filteredInstances = filteredInstances.filter(inst => {
-      if (wasteFilter === "Underused") return inst.cpu < 2 && inst.uptime > 24;
-      if (wasteFilter === "Over-provisioned") return inst.cpu > 16 && inst.uptime < 24;
-      return wasteFilter === "OK";
+      if (wasteFilter === WasteFilter.Underused) return inst.cpu < 2 && inst.uptime > 24;
+      if (wasteFilter === WasteFilter.OverProvisioned) return inst.cpu > 16 && inst.uptime < 24;
+      return wasteFilter === WasteFilter.OK;
     });
   }
   // Server selection UI
@@ -72,9 +62,9 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
   }
   // Time range filtering (days)
   let timeFilteredData = filteredUsageData;
-  if (timeRange === '1d') timeFilteredData = filteredUsageData.slice(-1);
-  else if (timeRange === '7d') timeFilteredData = filteredUsageData.slice(-7);
-  else if (timeRange === '14d') timeFilteredData = filteredUsageData.slice(-14);
+  if (timeRange === TimeRange.OneDay) timeFilteredData = filteredUsageData.slice(-1);
+  else if (timeRange === TimeRange.SevenDays) timeFilteredData = filteredUsageData.slice(-7);
+  else if (timeRange === TimeRange.FourteenDays) timeFilteredData = filteredUsageData.slice(-14);
 
   const [selectedRange, setSelectedRange] = useState({ startIndex: 0, endIndex: Math.max(0, timeFilteredData.length - 1) });
 
@@ -104,9 +94,9 @@ const UtilizationTimeline: React.FC<{ usageData: UsageDatum[]; annotations?: Ann
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-800 dark:text-gray-200">Range:</span>
-          <button className={`px-2 py-1 rounded text-xs ${timeRange === '1d' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('1d')}>1d</button>
-          <button className={`px-2 py-1 rounded text-xs ${timeRange === '7d' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('7d')}>7d</button>
-          <button className={`px-2 py-1 rounded text-xs ${timeRange === '14d' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange('14d')}>14d</button>
+          <button className={`px-2 py-1 rounded text-xs ${timeRange === TimeRange.OneDay ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange(TimeRange.OneDay)}>1d</button>
+          <button className={`px-2 py-1 rounded text-xs ${timeRange === TimeRange.SevenDays ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange(TimeRange.SevenDays)}>7d</button>
+          <button className={`px-2 py-1 rounded text-xs ${timeRange === TimeRange.FourteenDays ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100'}`} onClick={() => setTimeRange(TimeRange.FourteenDays)}>14d</button>
         </div>
       </div>
       <div className="w-full max-w-full h-80">

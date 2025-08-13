@@ -1,3 +1,5 @@
+import { ActiveFilter } from "@/types/app";
+import { WasteFilter } from "../types/enums";
 import { useAppContext } from "../lib/AppContext";
 
 export default function FilterBar({ instances }: { instances: any[] }) {
@@ -6,7 +8,7 @@ export default function FilterBar({ instances }: { instances: any[] }) {
   const types = Array.from(new Set(instances.map(i => i.type)));
   const owners = Array.from(new Set(instances.map(i => i.owner)));
   const jobIds = Array.from(new Set(instances.map(i => i.jobId)));
-  const wasteLevels = ["All", "Underused", "Over-provisioned", "OK"];
+  const wasteLevels = [WasteFilter.All, WasteFilter.Underused, WasteFilter.OverProvisioned, WasteFilter.OK];
 
   // Context for all filters
   const { filter, setFilter, typeFilter, setTypeFilter, ownerFilter, setOwnerFilter, wasteFilter, setWasteFilter, jobIdFilter, setJobIdFilter, resetFilters } = useAppContext();
@@ -26,14 +28,13 @@ export default function FilterBar({ instances }: { instances: any[] }) {
       case 'region': setFilter(''); break;
       case 'type': setTypeFilter(''); break;
       case 'owner': setOwnerFilter(''); break;
-      case 'waste': setWasteFilter('All'); break;
+  case 'waste': setWasteFilter(WasteFilter.All); break;
       case 'jobId': setJobIdFilter(''); break;
       default: break;
     }
   };
 
   // Collect active filters
-  type ActiveFilter = { key: string; label: string };
   const activeFilters: ActiveFilter[] = [
     filter ? { key: 'region', label: `Region: ${filter}` } : undefined,
     typeFilter ? { key: 'type', label: `Type: ${typeFilter}` } : undefined,
@@ -116,7 +117,7 @@ export default function FilterBar({ instances }: { instances: any[] }) {
             aria-label="Waste level filter"
             className="border border-blue-200 dark:border-gray-700 px-3 py-2 rounded-lg text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition-all hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-900 shadow-sm"
             value={wasteFilter}
-            onChange={e => setWasteFilter(e.target.value)}
+            onChange={e => setWasteFilter(e.target.value as WasteFilter)}
           >
             {wasteLevels.map(level => (
               <option key={level} value={level}>{level}</option>
