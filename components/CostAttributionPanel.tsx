@@ -33,6 +33,9 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
   const [view, setView] = useState<'table' | 'chart' | 'pie'>("table");
   const [compareBy, setCompareBy] = useState<'dimension' | 'time'>("dimension");
   const [dimensionType, setDimensionType] = useState<'region' | 'type' | 'owner' | 'jobId' | 'team'>("region");
+  // Hydration check
+  const [hydrated, setHydrated] = React.useState(false);
+  React.useEffect(() => { setHydrated(true); }, []);
 
   // Apply global filters to instances first
   let filteredInstances = instances;
@@ -60,7 +63,7 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
       ? filteredAttribution.reduce((sum, a) => sum + (a.timeSeries ? a.timeSeries.reduce((s: number, t: TimeSeriesDatum) => s + t.cost, 0) : 0), 0)
       : 0;
   // Unaccounted cost (difference from costOverview.total)
-  const unaccountedCost = typeof window !== "undefined" && window.costOverview ? window.costOverview.total - totalCost : 0;
+  const unaccountedCost = hydrated && typeof window !== "undefined" && window.costOverview ? window.costOverview.total - totalCost : 0;
 
   return (
   <div className="bg-white dark:bg-gray-900 p-6 rounded shadow">
@@ -254,10 +257,10 @@ export default function CostAttributionPanel({ attribution, instances }: { attri
           <strong className="dark:text-gray-100">Attributed Cost:</strong> ${totalCost}
         </div>
         <div>
-          <strong className="dark:text-gray-100">Total Cost (from overview):</strong> ${typeof window !== "undefined" && window.costOverview ? window.costOverview.total : "-"}
+          <strong className="dark:text-gray-100">Total Cost (from overview):</strong> {hydrated && typeof window !== "undefined" && window.costOverview ? window.costOverview.total : "-"}
         </div>
         <div>
-          <strong className="dark:text-gray-100">Unaccounted Cost:</strong> <span className={unaccountedCost > 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>${unaccountedCost}</span>
+          <strong className="dark:text-gray-100">Unaccounted Cost:</strong> <span className={unaccountedCost > 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>{hydrated ? `$${unaccountedCost}` : "-"}</span>
         </div>
       </div>
     </div>
